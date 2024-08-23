@@ -1,124 +1,82 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta charset="utf-8" />
+    <title>Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cobit 5</title>
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="../assets/img/svg/logo.svg" type="image/x-icon">
-    <!-- Custom styles -->
-    <link rel="stylesheet" href="../assets/css/style.min.css">
+    <meta content="Cobit 5" name="description" />
+    <meta content="Cobit 5" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="../assets/images/favicon.ico">
+    <!-- dark layout js -->
+    <script src="../assets/js/pages/layout.js"></script>
+    <!-- Bootstrap Css -->
+    <link href="../assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="../assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- simplebar css -->
+    <link href="../assets/libs/simplebar/simplebar.min.css" rel="stylesheet">
+    <!-- App Css-->
+    <link href="../assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+
 </head>
 
 <body>
-    <div class="layer"></div>
-    <!-- ! Body -->
-    <div class="page-flex">
-        <!-- ! Sidebar -->
-        <?php include 'sidebar.php' ?>
-        <div class="main-wrapper">
-            <!-- ! Main nav -->
-            <?php include 'main-nav.php' ?>
-            <!-- ! Main -->
-            <main class="main users chart-page" id="skip-target">
-                <div class="container">
-                    <h2 class="main-title">Dashboard</h2>
-                    <div class="row stat-cards">
-                        <div class="col-md-6 col-xl-3">
-                            <article class="stat-cards-item">
-                                <div class="stat-cards-icon primary">
-                                    <i data-feather="bar-chart-2" aria-hidden="true"></i>
+
+    <div id="layout-wrapper">
+
+
+        <?php include 'partials/topbar.php'; ?>
+
+
+        <?php include 'partials/sidebar.php'; ?>
+
+        <!-- Start right Content here -->
+
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h4 class="fs-16 fw-semibold mb-1 mb-md-2">Good Morning, <span
+                                            class="text-primary">Jonas!</span></h4>
+                                    <p class="text-muted mb-0">Here's what's happening with your store today.</p>
                                 </div>
-                                <div class="stat-cards-info">
-                                    <p class="stat-cards-info__num">1478 286</p>
-                                    <p class="stat-cards-info__title">Total visits</p>
-                                    <p class="stat-cards-info__progress">
-                                        <span class="stat-cards-info__profit success">
-                                            <i data-feather="trending-up" aria-hidden="true"></i>4.07%
-                                        </span>
-                                        Last month
-                                    </p>
-                                </div>
-                            </article>
-                        </div>
-                        <div class="col-md-6 col-xl-3">
-                            <article class="stat-cards-item">
-                                <div class="stat-cards-icon warning">
-                                    <i data-feather="file" aria-hidden="true"></i>
-                                </div>
-                                <div class="stat-cards-info">
-                                    <p class="stat-cards-info__num">1478 286</p>
-                                    <p class="stat-cards-info__title">Total visits</p>
-                                    <p class="stat-cards-info__progress">
-                                        <span class="stat-cards-info__profit success">
-                                            <i data-feather="trending-up" aria-hidden="true"></i>0.24%
-                                        </span>
-                                        Last month
-                                    </p>
-                                </div>
-                            </article>
-                        </div>
-                        <div class="col-md-6 col-xl-3">
-                            <article class="stat-cards-item">
-                                <div class="stat-cards-icon purple">
-                                    <i data-feather="file" aria-hidden="true"></i>
-                                </div>
-                                <div class="stat-cards-info">
-                                    <p class="stat-cards-info__num">1478 286</p>
-                                    <p class="stat-cards-info__title">Total visits</p>
-                                    <p class="stat-cards-info__progress">
-                                        <span class="stat-cards-info__profit danger">
-                                            <i data-feather="trending-down" aria-hidden="true"></i>1.64%
-                                        </span>
-                                        Last month
-                                    </p>
-                                </div>
-                            </article>
-                        </div>
-                        <div class="col-md-6 col-xl-3">
-                            <article class="stat-cards-item">
-                                <div class="stat-cards-icon success">
-                                    <i data-feather="feather" aria-hidden="true"></i>
-                                </div>
-                                <div class="stat-cards-info">
-                                    <p class="stat-cards-info__num">1478 286</p>
-                                    <p class="stat-cards-info__title">Total visits</p>
-                                    <p class="stat-cards-info__progress">
-                                        <span class="stat-cards-info__profit warning">
-                                            <i data-feather="trending-up" aria-hidden="true"></i>0.00%
-                                        </span>
-                                        Last month
-                                    </p>
-                                </div>
-                            </article>
+                            </div>
                         </div>
                     </div>
+                    <!--    end row -->
+
                 </div>
-            </main>
-            <!-- ! Footer -->
-            <footer class="footer">
-                <div class="container footer--flex">
-                    <div class="footer-start">
-                        <p>2021 © Elegant Dashboard - <a href="elegant-dashboard.com" target="_blank"
-                                rel="noopener noreferrer">elegant-dashboard.com</a></p>
-                    </div>
-                    <ul class="footer-end">
-                        <li><a href="##">About</a></li>
-                        <li><a href="##">Support</a></li>
-                        <li><a href="##">Puchase</a></li>
-                    </ul>
-                </div>
-            </footer>
+                <!-- end container-fluid -->
+            </div>
+            <!-- End Page-content -->
+
+            <?php include 'partials/footer.php'; ?>
+
         </div>
+        <!-- end main content-->
     </div>
-    <!-- Chart library -->
-    <script src="../assets/plugins/chart.min.js"></script>
-    <!-- Icons library -->
-    <script src="../assets/plugins/feather.min.js"></script>
-    <!-- Custom scripts -->
-    <script src="../assets/js/script.js"></script>
+    <!-- end layout-wrapper -->
+    <!-- JAVASCRIPT -->
+    <script src="../assets/libs/jquery/jquery.min.js"></script>
+    <script src="../assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/libs/metismenu/metisMenu.min.js"></script>
+    <script src="../assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="../assets/libs/node-waves/waves.min.js"></script>
+
+
+    <!-- apexcharts -->
+    <script src="../assets/libs/apexcharts/apexcharts.min.js"></script>
+
+    <script src="../assets/js/pages/dashboard.init.js"></script>
+
+    <!-- App js -->
+    <script src="../assets/js/app.js"></script>
 </body>
 
 </html>
