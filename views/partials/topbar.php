@@ -23,7 +23,7 @@
                      <img src="../assets/images/logo-light.png" alt="logo-light" height="18">
                  </span>
              </a> -->
-             <span>Cobit 5</span>
+             <span style="font-size: 14px;">Cobit 5</span>
 
              <button type="button" class="btn btn-sm top-icon sidebar-btn" id="sidebar-btn">
                  <i class="mdi mdi-menu-open align-middle fs-19"></i>
