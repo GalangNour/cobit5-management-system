@@ -76,8 +76,10 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Data Pertanyaan</h4>
-                                    <a href="tambah_pertanyaan.php" class="btn btn-primary">Tambah Pertanyaan</a>
+                                    <h4 class="card-title">Data Pertanyaan </h4>
+                                    <a href="tambah_pertanyaan.php" class="btn btn-primary"
+                                        style="margin-left: 4px;">Tambah
+                                        Pertanyaan</a>
                                 </div>
                                 <div class="card-body">
                                     <table id="datatable"

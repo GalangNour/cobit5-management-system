@@ -5,50 +5,68 @@ if (isset($_GET['id'])) {
     $id_perspektif = $_GET['id'];
     $get_perspektif = mysqli_query($conn, "SELECT * FROM perspektif WHERE id_perspektif = '$id_perspektif'");
     $perspektif = mysqli_fetch_assoc($get_perspektif);
+    $nama_perspektif = $perspektif['nama_perspektif'];
+    // $namaperspektif = mysqli_q
+    // Tentukan level yang akan ditampilkan
+    $level = isset($_GET['level']) ? $_GET['level'] : 1;
+
+    // Ambil data pertanyaan berdasarkan level
+    $get_data = mysqli_query($conn, "SELECT * FROM questions WHERE perspektif_id = $id_perspektif AND level = '$level'");
 } else {
     echo "ID Perspektif tidak ditemukan!";
     exit;
 }
 
-// Inisialisasi variabel untuk mengatur level dan skor
-$current_level = '1';
-$next_level = null;
-$level_passed = true;
-
-// Logika pengujian skor
+// Proses form ketika disubmit
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $scores = $_POST['inputNilai'];
-    $total_score = array_sum($scores);
-    $question_count = count($scores);
-    $average_score = $total_score / $question_count;
+    $nilai_input = $_POST['inputNilai'];
+    $id_question = $_POST['idQuestion'];
+    $total_nilai = 0;
+    $jumlah_pertanyaan = count($nilai_input);
 
-    // Logika untuk Level 1
-    if ($current_level == '1') {
-        if ($average_score >= 51) {
-            $next_level = '2.1'; // Lanjut ke Level 2.1
+    // Update setiap nilai ke database
+    for ($i = 0; $i < $jumlah_pertanyaan; $i++) {
+        $nilai = $nilai_input[$i];
+        $id = $id_question[$i];
+
+        $update_query = mysqli_query($conn, "UPDATE questions SET exist = '$nilai' WHERE id_question = '$id'");
+
+        if (!$update_query) {
+            echo "Gagal menyimpan data untuk ID $id.";
+            exit;
+        }
+
+        $total_nilai += $nilai;
+    }
+
+    $cc = $total_nilai / $jumlah_pertanyaan;
+
+    if ($level == '2.1') {
+        // Jika skor 51% - 100%, lanjutkan ke level 2.2
+        if ($cc >= 51 && $cc <= 100) {
+            $next_level = '2.2';
+            header("Location: pengujian.php?id=$id_perspektif&level=$next_level");
+            exit;
         } else {
-            $level_passed = false;
+            $hasil_ujian = "Skor Anda tidak cukup untuk melanjutkan ke level 2.2.";
         }
-    }
-
-    // Logika untuk Level 2.1
-    if ($current_level == '2.1' && $level_passed) {
-        if ($average_score >= 51) {
-            $next_level = '2.2'; // Lanjut ke Level 2.2
+    } else if ($level == '2.2') {
+        // Jika level 2.2
+        if ($cc == 100) {
+            $hasil_ujian = "Anda bisa lanjut ke level 3.";
         } else {
-            $level_passed = false;
+            $hasil_ujian = "Tes berakhir di sini. Skor Anda tidak cukup untuk melanjutkan.";
+        }
+    } else {
+        // Logika untuk level lain (misalnya level 1)
+        if ($cc == 100) {
+            $next_level = '2.1';
+            header("Location: pengujian.php?id=$id_perspektif&level=$next_level");
+            exit;
+        } else {
+            $hasil_ujian = "Skor Anda tidak cukup untuk melanjutkan ke level berikutnya.";
         }
     }
-
-    // Logika untuk Level 2.2
-    if ($current_level == '2.2' && $level_passed) {
-        if ($average_score < 51) {
-            $level_passed = false;
-        }
-    }
-    
-    // Update level saat ini dengan level berikutnya
-    $current_level = $next_level;
 }
 ?>
 
@@ -79,19 +97,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Pengujian Perspektif</h4>
+                                    <h4 class="card-title">Pengujian <?php echo $nama_perspektif ?> Level
+                                        <?php echo $level; ?></h4>
                                 </div>
                                 <div class="card-body">
-
-                                    <!-- Form untuk menginput nilai -->
+                                    <?php if (!isset($hasil_ujian) || $level != '2.2') { ?>
+                                    <!-- Tampilkan tabel pertanyaan hanya jika tidak ada hasil pengujian atau bukan level 2.2 -->
                                     <form method="POST">
-                                        <table id="datatable"
+                                        <table
                                             class="table table-hover table-bordered table-striped dt-responsive nowrap"
                                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <?php if($current_level == '1') {?>
+                                                    <?php if ($level != '2.1' && $level != '2.2') { ?>
                                                     <th>Praktik Dasar</th>
                                                     <?php } ?>
                                                     <th>Praktik Umum</th>
@@ -101,7 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             <tbody>
                                                 <?php 
                                                 $no = 1;
-                                                $get_data = mysqli_query($conn, "SELECT * FROM questions WHERE perspektif_id = '$id_perspektif' AND level = '$current_level'");
                                                 while ($display = mysqli_fetch_array($get_data)) {
                                                     $id = $display['id_question'];
                                                     $praktik_dasar = $display['praktik_dasar'];
@@ -109,74 +127,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                 ?>
                                                 <tr>
                                                     <td><?php echo $no ?></td>
-                                                    <?php if($current_level == '1') {?>
+                                                    <?php if ($level != '2.1' && $level != '2.2') { ?>
                                                     <td><?php echo $praktik_dasar ?></td>
                                                     <?php } ?>
                                                     <td><?php echo $praktik_umum ?></td>
                                                     <td>
-                                                        <input type="text" class="form-control" name="inputNilai[]"
-                                                            required>
+                                                        <input type="hidden" name="idQuestion[]"
+                                                            value="<?php echo $id; ?>">
+                                                        <input type="number" class="form-control" name="inputNilai[]"
+                                                            aria-describedby="inputNilai" required>
                                                     </td>
                                                 </tr>
                                                 <?php
-                                                $no++;
+                                                    $no++;
                                                 }
                                                 ?>
                                             </tbody>
                                         </table>
-
-                                        <!-- Tombol submit -->
                                         <button type="submit" class="btn btn-primary">Submit</button>
                                     </form>
+                                    <?php } ?>
 
-                                    <!-- Jika level tidak lulus, tampilkan tabel hasil -->
-                                    <?php if (!$level_passed): ?>
-                                    <hr>
-                                    <h4>Hasil Pengujian</h4>
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Tujuan Proses</th>
-                                                <th colspan="6">Pengelolaan Layanan Keamanan sistem perusahaan</th>
-                                            </tr>
-                                            <tr>
-                                                <th rowspan="2">EDM 03</th>
-                                                <th rowspan="2">Level 0</th>
-                                                <th>Level 1</th>
-                                                <th colspan="2">Level 2</th>
-                                                <th colspan="2">Level 3</th>
-                                                <th colspan="2">Level 4</th>
-                                                <th colspan="2">Level 5</th>
-                                            </tr>
-                                            <tr>
-
-                                                <th>PA 1.1</th>
-                                                <th>PA 2.1</th>
-                                                <th>PA 2.2</th>
-                                                <th>PA 3.1</th>
-                                                <th>PA 3.2</th>
-                                                <th>PA 4.1</th>
-                                                <th>PA 4.2</th>
-                                                <th>PA 5.1</th>
-                                                <th>PA 5.2</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Rating</td>
-                                                <td>F</td>
-                                                <td><?php echo ($current_level == '1') ? 'L' : 'F'; ?></td>
-                                                <td><?php echo ($current_level == '2.1') ? 'L' : (($current_level > '1') ? 'F' : ''); ?>
-                                                </td>
-                                                <td><?php echo ($current_level == '2.2') ? 'L' : (($current_level > '1') ? 'F' : ''); ?>
-                                                </td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <?php endif; ?>
+                                    <!-- Tampilkan hasil pengujian -->
+                                    <?php if (isset($hasil_ujian)) { ?>
+                                    <p><?php echo $hasil_ujian; ?></p>
+                                    <?php } ?>
                                 </div>
                             </div>
                         </div>

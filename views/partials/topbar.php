@@ -6,7 +6,7 @@
 
          <!-- Start Navbar-Brand -->
          <div class="navbar-logo-box">
-             <a href="index.html" class="logo logo-dark">
+             <!-- <a href="index.html" class="logo logo-dark">
                  <span class="logo-sm">
                      <img src="../assets/images/logo-sm.png" alt="logo-sm-dark" height="20">
                  </span>
@@ -22,7 +22,8 @@
                  <span class="logo-lg">
                      <img src="../assets/images/logo-light.png" alt="logo-light" height="18">
                  </span>
-             </a>
+             </a> -->
+             <span>Cobit 5</span>
 
              <button type="button" class="btn btn-sm top-icon sidebar-btn" id="sidebar-btn">
                  <i class="mdi mdi-menu-open align-middle fs-19"></i>
