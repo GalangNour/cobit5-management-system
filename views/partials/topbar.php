@@ -1,3 +1,4 @@
+ <?php session_start() ?>
  <!-- Start topbar -->
  <header id="page-topbar">
      <div class="navbar-header">
@@ -55,15 +56,17 @@
                                          </div>
                                      </div>
                                      <div class="rich-list-content">
-                                         <h3 class="rich-list-title text-white">Charlie Stone</h3>
-                                         <span class="rich-list-subtitle text-white">admin@codubucks.in</span>
+                                         <h3 class="rich-list-title text-white"><?php echo $_SESSION['nama']?>
+                                         </h3>
+                                         <span
+                                             class="rich-list-subtitle text-white"><?php echo $_SESSION['email']?></span>
                                      </div>
-                                     <div class="rich-list-append"><span class="badge badge-label-light fs-6">6+</span>
-                                     </div>
+
                                  </div>
                              </div>
-                             <div class="card-footer card-footer-bordered rounded-0"><a href="auth-login.html"
-                                     class="btn btn-label-danger">Sign out</a></div>
+                             <div class="card-footer card-footer-bordered rounded-0"><a href="logout.php"
+                                     class="btn btn-label-danger">Sign out</a>
+                             </div>
                          </div>
                      </div>
                  </div>
