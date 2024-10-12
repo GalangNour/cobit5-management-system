@@ -1,4 +1,14 @@
-<?php include '../config/database.php' ; ?>
+<?php 
+include '../config/database.php';// Ambil id_project dari URL
+if (isset($_GET['id_project'])) {
+    $id_project = $_GET['id_project'];
+} else {
+    // Jika id_project tidak ada di URL, redirect atau tampilkan pesan error
+    header("Location: project.php");
+    exit();
+}
+
+ ?>
 <!doctype html>
 <html lang="en">
 
@@ -38,28 +48,6 @@
         <div class="main-content">
             <div class="page-content">
                 <div class="container-fluid">
-                    <?php
-                if (isset($_GET['message']) && $_GET['message'] == 'success') {
-                    echo "<script>
-                        Swal.fire({
-                            title: 'Berhasil!',
-                            text: 'Pertanyaan berhasil ditambahkan.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
-                    </script>";
-                }
-                if (isset($_GET['message']) && $_GET['message'] == 'edit-success') {
-                    echo "<script>
-                        Swal.fire({
-                            title: 'Berhasil!',
-                            text: 'Pertanyaan berhasil diperbarui.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
-                    </script>";
-                }
-                ?>
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box d-flex align-items-center justify-content-between">
@@ -71,7 +59,10 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Data Pertanyaan</h4>
+                                    <h4 class="card-title">Detail Project</h4>
+                                    <a href="tambah_data.php?id_project=<?php echo $id_project; ?>"
+                                        class="btn btn-primary">Tambah Data</a>
+
                                 </div>
                                 <div class="card-body">
                                     <table id="datatable"
@@ -80,33 +71,37 @@
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Process Code</th>
-                                                <th>Level</th>
-                                                <th>PA</th>
-                                                <th>Question</th>
-                                                <th>Description</th>
+                                                <th>Name</th>
+                                                <th>Auditor</th>
+                                                <th>Audit At</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php 
                         $no = 1;
-                        $get_data = mysqli_query($conn, "SELECT * FROM question");
+                        $get_data = mysqli_query($conn, "SELECT * FROM pengujian WHERE id_cobit = '$id_project'");
 
                         // Loop through each question and display data
                         while ($display = mysqli_fetch_array($get_data)) {
-                            $processCode = !empty($display['process_code']) ? $display['process_code'] : '-';
+                            $id = !empty($display['id_pengujian']) ? $display['id_pengujian'] : '-';
+                            $cobit = !empty($display['id_cobit']) ? $display['id_cobit'] : '-';
+                            $audit_process = !empty($display['audit_process']) ? $display['audit_process'] : '-';
+                            $desc = !empty($display['description']) ? $display['description'] : '-';
                             $level = !empty($display['level']) ? $display['level'] : '-';
-                            $pa = !empty($display['pa']) ? $display['pa'] : '-';
-                            $question = !empty($display['question']) ? $display['question'] : '-';
-                            $description = !empty($display['description']) ? $display['description'] : '-';
                         ?>
                                             <tr>
                                                 <td><?php echo $no; ?></td>
-                                                <td><?php echo $processCode; ?></td>
+                                                <td><?php echo $audit_process; ?></td>
+                                                <td><?php echo $desc; ?></td>
                                                 <td><?php echo $level; ?></td>
-                                                <td><?php echo $pa; ?></td>
-                                                <td><?php echo $question; ?></td>
-                                                <td><?php echo $description; ?></td>
+                                                <td>
+
+                                                    <a href="pengujian_audit.php?id=<?php echo $id; ?>"
+                                                        class="btn btn-primary">Audit</a>
+                                                    <a href="delete.php?id=<?php echo $id; ?>"
+                                                        class="btn btn-danger">Delete</a>
+                                                </td>
                                             </tr>
                                             <?php
                             $no++;

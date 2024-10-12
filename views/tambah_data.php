@@ -1,6 +1,20 @@
 <?php 
 session_start(); // Ensure session is started to access session variables
 include '../config/database.php'; 
+// Set timezone to Asia/Jakarta (WIB, GMT+7)
+date_default_timezone_set('Asia/Jakarta');
+
+// Ambil id_project dari URL
+if (isset($_GET['id_project'])) {
+    $id_project = $_GET['id_project'];
+} else {
+    // Jika id_project tidak ada di URL, redirect atau tampilkan pesan error
+    header("Location: project.php");
+    exit();
+}
+
+// Fetch data from the 'question' table
+$process_codes = mysqli_query($conn, "SELECT DISTINCT process_code FROM question");
 ?>
 <!doctype html>
 <html lang="en">
@@ -32,7 +46,7 @@ include '../config/database.php';
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box d-flex align-items-center justify-content-between">
-                                <h4 class="mb-0">Tambah Project</h4>
+                                <h4 class="mb-0">Data Project Audit Process</h4>
                             </div>
                         </div>
                     </div>
@@ -41,13 +55,20 @@ include '../config/database.php';
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <form method="POST" action="tambah_project_action.php">
+                                    <form method="POST" action="tambah_data_action.php">
+                                        <input type="hidden" name="id_project" value="<?php echo $id_project; ?>">
                                         <div class="mb-3">
-                                            <label for="name" class="form-label">Project Name</label>
-                                            <input type="text" class="form-control" id="name" name="name" required>
+                                            <label for="name" class="form-label">Audit Process</label>
+                                            <select class="form-select" id="audit_process" name="audit_process"
+                                                required>
+                                                <option value="" disabled selected>Pilih Audit Process</option>
+                                                <?php 
+                                                while ($row = mysqli_fetch_assoc($process_codes)) {
+                                                    echo "<option value='".$row['process_code']."'>".$row['process_code']."</option>";
+                                                }
+                                                ?>
+                                            </select>
                                         </div>
-
-                                        <input type="hidden" name="audit_at" value="<?php echo date('Y-m-d H:i:s'); ?>">
                                         <button type="submit" class="btn btn-primary">Simpan</button>
                                         <a href="index.php" class="btn btn-secondary">Batal</a>
                                     </form>

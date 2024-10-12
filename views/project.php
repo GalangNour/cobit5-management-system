@@ -97,7 +97,7 @@
                                         <tbody>
                                             <?php 
                         $no = 1;
-                        $get_data = mysqli_query($conn, "SELECT * FROM cobit");
+                        $get_data = mysqli_query($conn, "SELECT * FROM cobit WHERE deleted_at IS NULL");
 
                         // Loop through each question and display data
                         while ($display = mysqli_fetch_array($get_data)) {
@@ -114,10 +114,12 @@
                                                 <td>
                                                     <a href="report.php?id=<?php echo $id; ?>"
                                                         class="btn btn-info">Report</a>
-                                                    <a href="detail.php?id=<?php echo $id; ?>"
-                                                        class="btn btn-primary">Detail</a>
-                                                    <a href="delete.php?id=<?php echo $id; ?>"
-                                                        class="btn btn-danger">Delete</a>
+                                                    <a href="detail_project.php?id_project=<?php echo $id; ?>"
+                                                        class="btn btn-primary">Audit</a>
+                                                    <a href="delete_project.php?id=<?php echo $id; ?>"
+                                                        class="btn btn-danger"
+                                                        onclick="return confirm('Apakah Anda yakin ingin menghapus pertanyaan ini?')">Delete</a>
+
                                                 </td>
                                             </tr>
                                             <?php

@@ -41,45 +41,47 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Tambah Pertanyaan</h4>
+                                    <h4 class="card-title">Form Tambah Pertanyaan</h4>
                                 </div>
                                 <div class="card-body">
-                                    <form action="add_question.php" method="POST">
+                                    <form action="simpan_pertanyaan.php" method="POST">
                                         <div class="mb-3">
-                                            <label for="process_code" class="form-label">Process Code</label>
-                                            <input type="text" class="form-control" id="process_code"
-                                                name="process_code" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="level" class="form-label">Level</label>
-                                            <select class="form-select" id="level" name="level" required>
-                                                <option value="" disabled selected>Pilih Level</option>
-                                                <option value="1">1</option>
-                                                <option value="2">2</option>
-                                                <option value="3">3</option>
-                                                <option value="4">4</option>
-                                                <option value="5">5</option>
+                                            <label for="perspektif_id" class="form-label">Nama Perspektif</label>
+                                            <select class="form-select" id="perspektif_id" name="perspektif_id"
+                                                required>
+                                                <option value="" disabled selected>Pilih Perspektif</option>
+                                                <?php
+                                                    $result = mysqli_query($conn, "SELECT * FROM perspektif");
+                                                    while($row = mysqli_fetch_assoc($result)) {
+                                                        echo "<option value='" . $row['id_perspektif'] . "'>" . $row['nama_perspektif'] . "</option>";
+                                                    }
+                                                ?>
                                             </select>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="pa" class="form-label">PA</label>
-                                            <input type="text" class="form-control" id="pa" name="pa" required>
+                                            <label for="level" class="form-label">Level</label>
+                                            <select class="form-select" name="level" required>
+                                                <option value="1">1</option>
+                                                <option value="2.1">2.1</option>
+                                                <option value="2.2">2.2</option>
+                                                <option value="3.1">3.1</option>
+                                                <option value="3.2">3.2</option>
+                                            </select>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="question" class="form-label">Question</label>
-                                            <textarea class="form-control" id="question" name="question" rows="3"
-                                                required></textarea>
+                                            <label for="praktik_dasar" class="form-label">Praktik Dasar</label>
+                                            <textarea class="form-control" id="praktik_dasar" name="praktik_dasar"
+                                                rows="3" required></textarea>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="description" class="form-label">Description</label>
-                                            <textarea class="form-control" id="description" name="description"
-                                                rows="3"></textarea>
+                                            <label for="praktik_umum" class="form-label">Praktik Umum</label>
+                                            <textarea class="form-control" id="praktik_umum" name="praktik_umum"
+                                                rows="3" required></textarea>
                                         </div>
-                                        <button type="submit" class="btn btn-primary">Tambah Pertanyaan</button>
+                                        <button type="submit" class="btn btn-primary">Simpan</button>
                                     </form>
                                 </div>
                             </div>
-
                         </div> <!-- end col -->
                     </div>
                 </div>

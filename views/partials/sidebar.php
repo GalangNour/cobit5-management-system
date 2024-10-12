@@ -13,19 +13,19 @@
                         <span>Dashboard</span>
                     </a>
                 </li>
-                <li>
+                <!-- <li>
                     <a href="perspektif.php" class="">
                         <i class="fas fa-chart-pie"></i>
                         <span>Perspektif</span>
                     </a>
-                </li>
+                </li> -->
                 <li>
-                    <a href="questions.php" class="">
+                    <a href="question.php" class="">
                         <i class="fas fa-question-circle"></i>
                         <span>Pertanyaan</span>
                     </a>
                 </li>
-                <li>
+                <!-- <li>
                     <a href="prepengujian.php" class="">
                         <i class="fas fa-flask"></i>
                         <span>Pengujian</span>
@@ -35,6 +35,12 @@
                     <a href="hasil2.php" class="">
                         <i class="fas fa-poll"></i>
                         <span>Hasil</span>
+                    </a>
+                </li> -->
+                <li>
+                    <a href="project.php" class="">
+                        <i class="fas fa-poll"></i>
+                        <span>Project</span>
                     </a>
                 </li>
             </ul>
