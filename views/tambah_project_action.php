@@ -14,9 +14,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("sss", $name, $auditor, $audit_at);
 
     if ($stmt->execute()) {
-        header("Location: index.php?message=success");
+        header("Location: project.php?message=success");
     } else {
-        header("Location: index.php?message=error");
+        header("Location: project.php?message=error");
     }
     
     $stmt->close();

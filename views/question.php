@@ -72,6 +72,9 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h4 class="card-title">Data Pertanyaan</h4>
+                                    <a href="tambah_question.php" class="btn btn-primary"
+                                        style="margin-left: 4px;">Tambah
+                                        Pertanyaan</a>
                                 </div>
                                 <div class="card-body">
                                     <table id="datatable"
@@ -85,6 +88,7 @@
                                                 <th>PA</th>
                                                 <th>Question</th>
                                                 <th>Description</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -94,6 +98,7 @@
 
                         // Loop through each question and display data
                         while ($display = mysqli_fetch_array($get_data)) {
+                            $id = $display['id_question'];
                             $processCode = !empty($display['process_code']) ? $display['process_code'] : '-';
                             $level = !empty($display['level']) ? $display['level'] : '-';
                             $pa = !empty($display['pa']) ? $display['pa'] : '-';
@@ -107,6 +112,19 @@
                                                 <td><?php echo $pa; ?></td>
                                                 <td><?php echo $question; ?></td>
                                                 <td><?php echo $description; ?></td>
+
+                                                <td>
+                                                    <div class="btn-group" role="group" aria-label="Action Buttons">
+                                                        <a href="edit_question.php?id=<?php echo $id; ?>"
+                                                            class="btn btn-warning me-2">Edit</a>
+                                                        <a href="delete_question.php?id=<?php echo $id; ?>"
+                                                            class="btn btn-danger"
+                                                            onclick="return confirm('Apakah Anda yakin ingin menghapus pertanyaan ini?')">Delete</a>
+                                                    </div>
+                                                </td>
+
+
+
                                             </tr>
                                             <?php
                             $no++;

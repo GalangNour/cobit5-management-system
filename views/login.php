@@ -67,7 +67,8 @@
                             <p>©
                                 <script>
                                 document.write(new Date().getFullYear())
-                                </script> Clivax. Crafted with <i class="mdi mdi-heart text-danger"></i> by Codubucks
+                                </script>
+                                Cobit5. Crafted with <i class="mdi mdi-heart text-danger"></i>
                             </p>
                         </div>
                     </div>

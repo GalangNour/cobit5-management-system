@@ -99,7 +99,7 @@ if (isset($_GET['id_project'])) {
 
                                                     <a href="pengujian_audit.php?id=<?php echo $id; ?>"
                                                         class="btn btn-primary">Audit</a>
-                                                    <a href="delete.php?id=<?php echo $id; ?>"
+                                                    <a href="delete_detail_project.php?id=<?php echo $id; ?>"
                                                         class="btn btn-danger">Delete</a>
                                                 </td>
                                             </tr>

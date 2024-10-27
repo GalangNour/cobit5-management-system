@@ -59,6 +59,16 @@
                         });
                     </script>";
                 }
+                if (isset($_GET['message']) && $_GET['message'] == 'success-data') {
+                    echo "<script>
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: 'Data Project berhasil diperbarui.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    </script>";
+                }
                 ?>
                     <div class="row">
                         <div class="col-12">
