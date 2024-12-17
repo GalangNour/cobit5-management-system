@@ -133,6 +133,10 @@ if ($audit_detail_query->num_rows > 0) {
                                             <span><strong>Total Score: </strong></span>
                                             <input type="text" id="totalScore" value="0" readonly disabled>
                                         </div>
+                                        <div class="mt-3">
+                                            <span><strong>Average Score: </strong></span>
+                                            <input type="text" id="averageScore" value="0" readonly disabled>
+                                        </div>
                                         <button type="submit" class="btn btn-primary mt-3">Submit</button>
                                     </form>
                                 </div>
@@ -145,30 +149,7 @@ if ($audit_detail_query->num_rows > 0) {
     </div>
 
     <script>
-    function updateScoreAndLevel(checkbox) {
-        var scoreInput = checkbox.parentElement.parentElement.querySelector('input[name="score[]"]');
-        var levelInput = checkbox.parentElement.parentElement.querySelector('input[name="level[]"]');
-
-        if (checkbox.checked) {
-            scoreInput.value = 100;
-            levelInput.value = "F";
-        } else {
-            scoreInput.value = 0;
-            levelInput.value = "N";
-        }
-
-        updateTotalScore();
-    }
-
-    function updateTotalScore() {
-        var totalScore = 0;
-        var scoreInputs = document.querySelectorAll('input[name="score[]"]');
-        scoreInputs.forEach(function (input) {
-            totalScore += parseInt(input.value);
-        });
-
-        document.getElementById("totalScore").value = totalScore;
-    }
+    
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
@@ -178,12 +159,10 @@ if ($audit_detail_query->num_rows > 0) {
 
     <script>
     $(document).ready(function () {
-        var averageScore = <?php echo isset($averageScore) ? $averageScore : 0; ?>;
-        var status_pa = 'stay';
+        
+        // You can use this value for logic like determining status_pa
+        var status_pa = averageScore === 100 ? 'stay' : 'next';
 
-        if (averageScore == 100) {
-            status_pa = 'next';
-        }
         // Handle form submission
         $('#auditForm').on('submit', function (e) {
             e.preventDefault(); // Prevent normal form submission
