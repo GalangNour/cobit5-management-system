@@ -1,0 +1,70 @@
+<?php
+include '../config/database.php';
+
+header('Content-Type: application/json');
+
+// Proses form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $scores = $_POST['score'] ?? [];
+    $levels = $_POST['level'] ?? [];
+    $exists = $_POST['exist'] ?? [];
+    $documentEvidences = $_POST['document_evidence'] ?? [];
+    $question_ids = $_POST['question_id'] ?? [];
+    
+    $questions_count = count($scores);
+    $totalScore = array_sum($scores);
+    $averageScore = $questions_count > 0 ? $totalScore / $questions_count : 0;
+
+    // Periksa apakah level sudah pernah dinilai
+    $checkQuery = $conn->prepare("SELECT * FROM audit WHERE id_pengujian = ? AND level_audit = ? AND pa_audit = ?");
+    $checkQuery->bind_param("iss", $id_project, $level, $pa);
+    $checkQuery->execute();
+    $result = $checkQuery->get_result();
+
+    if ($result->num_rows > 0) {
+        echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Level Sudah Dinilai',
+                text: 'Anda tidak bisa menilai dua kali!'
+            }).then(function() {
+                window.location.href = 'project.php';
+            });
+        });
+    </script>";
+    } else {
+        $insertQuery = $conn->prepare("INSERT INTO audit (id_pengujian, question_id, score, level, exist, document_evidence, level_audit, pa_audit) 
+                                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
+        foreach ($scores as $index => $score) {
+            $question_id = $question_ids[$index];
+            $questionLevel = $levels[$index] ?? 'N';
+            $existValue = $exists[$index] ?? 0;
+            $documentEvidence = $documentEvidences[$index] ?? '';
+
+            $insertQuery->bind_param(
+                "iiisisss",
+                $id_project,
+                $question_id,
+                $score,
+                $questionLevel,
+                $existValue,
+                $documentEvidence,
+                $level,
+                $pa
+            );
+
+            if (!$insertQuery->execute()) {
+                error_log("Error: " . $insertQuery->error);
+            }
+        }
+
+    }
+}
+
+
+
+// Kirimkan respon dalam format JSON
+echo json_encode($response);
+?>

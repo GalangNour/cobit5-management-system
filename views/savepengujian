@@ -1,0 +1,121 @@
+<?php
+include '../config/database.php';
+
+header('Content-Type: application/json');
+
+// Inisialisasi variabel untuk respon
+$response = ['status' => 'error', 'message' => 'Terjadi kesalahan.'];
+
+
+if (isset($_POST['id_project'])) {
+    $id_project = mysqli_real_escape_string($conn, $_POST['id_project']);
+    // Query untuk mengambil data current level dan PA
+    $level_query = "SELECT level, pa FROM pengujian WHERE id_pengujian = '$id_project'";
+    $level_result = mysqli_query($conn, $level_query);
+    $level_row = mysqli_fetch_assoc($level_result);
+    $current_level = $level_row['level'];
+    $current_pa = $level_row['pa'];
+    
+    $new_level = $current_level;
+    $new_pa = $current_pa;
+
+    // Logika kenaikan PA dan level
+    if ($current_level == 1) {
+        // Jika level 1 selesai, naik ke level 2 PA 2.1
+        $new_level = 2;
+        $new_pa = '2.1';
+    } elseif ($current_level == 2) {
+        // Logika untuk level 2
+        if ($current_pa == '2.1') {
+            $new_pa = '2.2'; // Pindah ke PA 2.2
+        } elseif ($current_pa == '2.2') {
+            $new_level = 3; // Naik ke level 3
+            $new_pa = '3.1'; // Mulai PA 3.1
+        }
+    } elseif ($current_level == 3) {
+        // Logika untuk level 3
+        if ($current_pa == '3.1') {
+            $new_pa = '3.2'; // Pindah ke PA 3.2
+        } elseif ($current_pa == '3.2') {
+            $new_level = 4; // Naik ke level 4
+            $new_pa = '4.1'; // Mulai PA 4.1
+        }
+    } elseif ($current_level == 4) {
+        // Logika untuk level 4
+        if ($current_pa == '4.1') {
+            $new_pa = '4.2'; // Pindah ke PA 4.2
+        } elseif ($current_pa == '4.2') {
+            $new_level = 5; // Naik ke level 5
+            $new_pa = '5.1'; // Mulai PA 5.1
+        }
+    }
+
+    // Update the database with the new level and PA
+    $update_level_pa = "UPDATE pengujian SET level = '$new_level', pa = '$new_pa' WHERE id_pengujian = '$id_project'";
+    if (mysqli_query($conn, $update_level_pa)) {
+        // Kirim respon sukses dalam format JSON
+        $response = [
+            'status' => 'success',
+            'new_level' => $new_level,
+            'pa' => $new_pa
+        ];
+    } else {
+        // Kirim pesan error dalam format JSON jika gagal
+        $response = [
+            'status' => 'error',
+            'message' => 'Error updating level and PA: ' . mysqli_error($conn)
+        ];
+    }
+}
+
+// Kirimkan respon dalam format JSON
+echo json_encode($response);
+?>
+
+ <script>
+$(document).ready(function() {
+    // Mengecek jika skor rata-rata = 100
+    var averageScore = <?php echo $averageScore; ?>;
+
+    if (averageScore == 100) {
+        // Jika averageScore 100, kirim permintaan untuk memperbarui level dan PA
+        $.ajax({
+            url: 'update_level_pa.php',
+            method: 'POST',
+            data: { id_project: <?php echo $id_project; ?> },
+            success: function(response) {
+                console.log(response);
+                try {
+                    // var data = JSON.parse(response);  // Parsing data JSON dari response
+                    if (response.status === 'success') {
+                        $('#level').text(response.new_level);
+                        $('#pa').text(response.pa);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Level dan PA berhasil diperbarui',
+                            text: 'Level dan PA telah diperbarui ke level ' + response.new_level + ' dengan PA ' + response.pa
+                        });
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                } catch (e) {
+                    Swal.fire('Error', 'Terjadi kesalahan dalam memproses respons JSON.', 'error');
+                    console.error('Parsing error:', e);
+                }
+            },
+            error: function() {
+                Swal.fire('Error', 'Terjadi kesalahan saat memperbarui level dan PA.', 'error');  // Menampilkan error saat AJAX gagal
+            }
+        });
+    } else {
+        // Jika averageScore tidak 100, bisa menambahkan logika lain, misalnya memberi pemberitahuan
+        // Swal.fire({
+        //     icon: 'info',
+        //     title: 'Skor Rata-Rata Tidak Mencapai 100',
+        //     text: 'Skor rata-rata saat ini tidak 100, level dan PA tidak diperbarui.'
+        // });
+
+        // Anda bisa menambahkan proses lain di sini, seperti update tampilan atau pengolahan lainnya
+    }
+});
+</script>

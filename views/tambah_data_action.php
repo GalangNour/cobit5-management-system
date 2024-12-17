@@ -9,10 +9,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $audit_process = $_POST['audit_process'];
     $description = "";
     $level = 1;
+    $pa = 1.1;
 
     // Prepare an insert statement
-    $stmt = $conn->prepare("INSERT INTO pengujian (id_cobit, audit_process, description, level) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("issi", $id_cobit, $audit_process, $description, $level);
+    $stmt = $conn->prepare("INSERT INTO pengujian (id_cobit, audit_process, description, level, pa) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("issis", $id_cobit, $audit_process, $description, $level, $pa);
 
     if ($stmt->execute()) {
         header("Location: project.php?message=success-data");

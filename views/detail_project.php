@@ -59,7 +59,7 @@ if (isset($_GET['id_project'])) {
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Detail Project</h4>
+                                    <h4 class="card-title me-2">Detail Project</h4>
                                     <a href="tambah_data.php?id_project=<?php echo $id_project; ?>"
                                         class="btn btn-primary">Tambah Data</a>
 
@@ -89,12 +89,13 @@ if (isset($_GET['id_project'])) {
                             $audit_process = !empty($display['audit_process']) ? $display['audit_process'] : '-';
                             $desc = !empty($display['description']) ? $display['description'] : '-';
                             $level = !empty($display['level']) ? $display['level'] : '-';
+                            $pa = !empty($display['pa']) ? $display['pa'] : '-';
                         ?>
                                             <tr>
                                                 <td><?php echo $no; ?></td>
                                                 <td><?php echo $audit_process; ?></td>
                                                 <td><?php echo $desc; ?></td>
-                                                <td><?php echo $level; ?></td>
+                                                <td><?php echo $level, " - " , $pa; ?></td>
                                                 <td>
 
                                                     <a href="pengujian_audit.php?id=<?php echo $id; ?>"
