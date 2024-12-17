@@ -87,19 +87,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $new_pa = $current_pa;
 
         // Logika kenaikan PA dan level
-        if (isset($status_pa)) {
+        if (isset($status_pa) && $status_pa == 'next') {
             if ($current_level == 1) {
                 // Jika level 1 selesai, naik ke level 2 PA 2.1
                 $new_level = 2;
                 $new_pa = '2.1';
-            } elseif ($current_level == 2 &&  $status_pa == 'next') {
+            } elseif ($current_level == 2) {
                 if ($current_pa == '2.1') {
                     $new_pa = '2.2'; // Pindah ke PA 2.2
                 } elseif ($current_pa == '2.2') {
                     $new_level = 3; // Naik ke level 3
                     $new_pa = '3.1'; // Mulai PA 3.1
                 }
-            } elseif ($current_level == 3 &&  $status_pa == 'next') {
+            } elseif ($current_level == 3) {
                 if ($current_pa == '3.1') {
                     $new_pa = '3.2'; // Pindah ke PA 3.2
                 } elseif ($current_pa == '3.2') {

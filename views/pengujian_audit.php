@@ -149,7 +149,34 @@ if ($audit_detail_query->num_rows > 0) {
     </div>
 
     <script>
-    
+    function updateScoreAndLevel(checkbox) {
+        var scoreInput = checkbox.parentElement.parentElement.querySelector('input[name="score[]"]');
+        var levelInput = checkbox.parentElement.parentElement.querySelector('input[name="level[]"]');
+
+        if (checkbox.checked) {
+            scoreInput.value = 100;
+            levelInput.value = "F";
+        } else {
+            scoreInput.value = 0;
+            levelInput.value = "N";
+        }
+
+        updateTotalScore();
+
+    }
+
+    function updateTotalScore() {
+        var totalScore = 0;
+        var scoreInputs = document.querySelectorAll('input[name="score[]"]');
+        scoreInputs.forEach(function (input) {
+            totalScore += parseInt(input.value);
+        });
+
+        var questionCount = document.querySelectorAll('input[name="score[]"]').length;
+        var averageScore = questionCount > 0 ? totalScore / questionCount : 0;
+        document.getElementById("totalScore").value = totalScore;
+        document.getElementById("averageScore").value = averageScore;
+    }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
@@ -159,49 +186,56 @@ if ($audit_detail_query->num_rows > 0) {
 
     <script>
     $(document).ready(function () {
+    // Handle form submission
+    $('#auditForm').on('submit', function (e) {
+        e.preventDefault(); // Prevent normal form submission
         
-        // You can use this value for logic like determining status_pa
-        var status_pa = averageScore === 100 ? 'stay' : 'next';
+        // First, update the total and average score
+        updateTotalScore();
+        
+        // Now we can get the updated average score
+        var averageScore = parseFloat(document.getElementById("averageScore").value);
 
-        // Handle form submission
-        $('#auditForm').on('submit', function (e) {
-            e.preventDefault(); // Prevent normal form submission
-            // Send the data via AJAX
-            $.ajax({
-                url: 'update_level_pa.php', // The PHP script that will process the form data
-                method: 'POST', 
-                data: {
-                    id_project: <?php echo $id_project; ?>,
-                    status_pa: status_pa 
-                },
-                success: function (response) {
-                    // Response is already a JavaScript object
-                    if (response.status === 'error') {
-                        Swal.fire({
-                            icon: 'error',
-                            title: response.title,
-                            text: response.text
-                        }).then(function () {
-                            window.location.href = response.redirect_url; // Redirect if needed
-                        });
-                    } else if (response.status === 'success') {
-                        $('#level').text(response.new_level);
-                        $('#pa').text(response.pa);
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Level dan PA berhasil diperbarui',
-                            text: 'Level dan PA telah diperbarui ke level ' + response.new_level + ' dengan PA ' + response.pa
-                        }).then(function () {
-                            window.location.reload(); // Redirect if needed
-                        });
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    Swal.fire('Error', 'Terjadi kesalahan saat mengirim data. (' + textStatus + ')', 'error');
+        // Determine status_pa based on the average score
+        var status_pa = averageScore === 100 ? 'next' : 'stay';
+
+        // Send the data via AJAX
+        $.ajax({
+            url: 'update_level_pa.php', // The PHP script that will process the form data
+            method: 'POST', 
+            data: {
+                id_project: <?php echo $id_project; ?>,
+                status_pa: status_pa
+            },
+            success: function (response) {
+                // Response is already a JavaScript object
+                if (response.status === 'error') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: response.title,
+                        text: response.text
+                    }).then(function () {
+                        window.location.href = response.redirect_url; // Redirect if needed
+                    });
+                } else if (response.status === 'success') {
+                    $('#level').text(response.new_level);
+                    $('#pa').text(response.pa);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Level dan PA berhasil diperbarui',
+                        text: 'Level dan PA telah diperbarui ke level ' + response.new_level + ' dengan PA ' + response.pa
+                    }).then(function () {
+                        window.location.reload(); // Redirect if needed
+                    });
                 }
-            });
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                Swal.fire('Error', 'Terjadi kesalahan saat mengirim data. (' + textStatus + ')', 'error');
+            }
         });
     });
+});
+
 </script>
 </body>
 </html>
