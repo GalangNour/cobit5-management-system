@@ -134,10 +134,19 @@ if ($audit_detail_query->num_rows > 0) {
                                             <input type="text" id="totalScore" value="0" readonly disabled>
                                         </div>
                                         <div class="mt-3">
+                                            <span><strong>Total Questions: </strong></span>
+                                            <input type="text" id="totalQuestions" value="0" readonly disabled>
+                                        </div>
+                                        <div class="mt-3">
                                             <span><strong>Average Score: </strong></span>
                                             <input type="text" id="averageScore" value="0" readonly disabled>
                                         </div>
+                                        <div class="mt-3">
+                                            <span><strong>Audit Score: </strong></span>
+                                            <input type="text" id="auditScore" value="0" readonly disabled>
+                                        </div>
                                         <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                                        <button type="button" id="clearStorageButton" class="btn btn-danger">Clear Storage</button>
                                     </form>
                                 </div>
                             </div>
@@ -149,10 +158,14 @@ if ($audit_detail_query->num_rows > 0) {
     </div>
 
     <script>
-    function updateScoreAndLevel(checkbox) {
-        var scoreInput = checkbox.parentElement.parentElement.querySelector('input[name="score[]"]');
-        var levelInput = checkbox.parentElement.parentElement.querySelector('input[name="level[]"]');
 
+    function updateScoreAndLevel(checkbox) {
+        var row = checkbox.parentElement.parentElement;
+        var scoreInput = row.querySelector('input[name="score[]"]');
+        var levelInput = row.querySelector('input[name="level[]"]');
+        var questionId = row.querySelector('input[name="question_id[]"]').value;
+
+        // Update score and level based on checkbox state
         if (checkbox.checked) {
             scoreInput.value = 100;
             levelInput.value = "F";
@@ -161,22 +174,84 @@ if ($audit_detail_query->num_rows > 0) {
             levelInput.value = "N";
         }
 
-        updateTotalScore();
+        // Save current question's state to localStorage
+        var scores = JSON.parse(localStorage.getItem('audit_scores')) || {};
+        scores[questionId] = { 
+            score: parseInt(scoreInput.value, 10), 
+            level: levelInput.value 
+        };
+        localStorage.setItem('audit_scores', JSON.stringify(scores));
 
+        // Recalculate total score and total questions
+        updateTotalScore();
     }
+
 
     function updateTotalScore() {
+        var scores = JSON.parse(localStorage.getItem('audit_scores')) || {};
         var totalScore = 0;
-        var scoreInputs = document.querySelectorAll('input[name="score[]"]');
-        scoreInputs.forEach(function (input) {
-            totalScore += parseInt(input.value);
+        var questionCount = Object.keys(scores).length;
+
+        Object.values(scores).forEach(item => {
+            totalScore += parseInt(item.score, 10) || 0; // Parsing angka dengan fallback 0
         });
 
-        var questionCount = document.querySelectorAll('input[name="score[]"]').length;
-        var averageScore = questionCount > 0 ? totalScore / questionCount : 0;
+        // Simpan total skor dan jumlah pertanyaan ke LocalStorage
+        localStorage.setItem('total_score', totalScore);
+        // localStorage.setItem('total_questions', questionCount);
+
+        // Tampilkan di UI
         document.getElementById("totalScore").value = totalScore;
-        document.getElementById("averageScore").value = averageScore;
+        document.getElementById("averageScore").value = questionCount > 0 ? (totalScore / questionCount).toFixed(2) : 0;
+        document.getElementById("auditScore").value = auditScore.value;
+
     }
+
+    function countTotalQuestions() {
+    // Count the number of rows in the tbody of the questions table
+    var currentQuestionCount = document.querySelectorAll('tbody tr').length;
+
+    // Retrieve the existing total from localStorage
+    var existingTotal = parseInt(localStorage.getItem('total_questions')) || 0; // Default to 0 if not found
+
+    // Update the total questions count
+    var newTotal = existingTotal + currentQuestionCount;
+
+    // Store the new total questions in localStorage
+    localStorage.setItem('total_questions', newTotal);
+
+    // Update the total questions input
+    document.getElementById("totalQuestions").value = newTotal; 
+}
+function displayTotalQuestions() {
+    var totalQuestions = localStorage.getItem('total_questions') || 0; // Default to 0 if not found
+    document.getElementById("totalQuestions").value = totalQuestions; // Update the total questions input
+}
+
+document.getElementById('clearStorageButton').addEventListener('click', function () {
+    // Hapus semua data dari localStorage
+    localStorage.removeItem('audit_scores');
+    localStorage.removeItem('total_score');
+    localStorage.removeItem('total_questions');
+
+    // Reset tampilan skor dan jumlah pertanyaan
+    document.getElementById("totalScore").value = 0;
+    document.getElementById("averageScore").value = 0;
+    document.getElementById("totalQuestions").value = 0;
+
+    // Hapus checkbox yang dicentang dan reset level dan score input
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
+    document.querySelectorAll('input[name="score[]"]').forEach(scoreInput => scoreInput.value = 0);
+    document.querySelectorAll('input[name="level[]"]').forEach(levelInput => levelInput.value = 'N');
+
+    // Beri notifikasi kepada pengguna
+    Swal.fire({
+        icon: 'success',
+        title: 'Storage Cleared',
+        text: 'Local storage and form values have been reset.'
+    });
+});
+    
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
@@ -192,12 +267,22 @@ if ($audit_detail_query->num_rows > 0) {
         
         // First, update the total and average score
         updateTotalScore();
+        countTotalQuestions();
+        
         
         // Now we can get the updated average score
-        var averageScore = parseFloat(document.getElementById("averageScore").value);
+        
+
+        // Ambil data dari LocalStorage
+        var scores = JSON.parse(localStorage.getItem('audit_scores')) || {};
+        var totalScore = localStorage.getItem('total_score') || 0;
+        var questionCount = localStorage.getItem('total_questions') || 0;
+
+        var averageScore = totalScore / questionCount
 
         // Determine status_pa based on the average score
         var status_pa = averageScore === 100 ? 'next' : 'stay';
+
 
         // Send the data via AJAX
         $.ajax({
@@ -205,7 +290,10 @@ if ($audit_detail_query->num_rows > 0) {
             method: 'POST', 
             data: {
                 id_project: <?php echo $id_project; ?>,
-                status_pa: status_pa
+                status_pa: status_pa,
+                // total_score: total_score,
+                // total_questions: total_questions,
+                
             },
             success: function (response) {
                 // Response is already a JavaScript object
@@ -234,7 +322,10 @@ if ($audit_detail_query->num_rows > 0) {
             }
         });
     });
+    // Count total questions and display on page load
+    displayTotalQuestions();
 });
+
 
 </script>
 </body>

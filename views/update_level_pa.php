@@ -87,42 +87,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $new_pa = $current_pa;
 
         // Logika kenaikan PA dan level
-        if (isset($status_pa) && $status_pa == 'next') {
-            if ($current_level == 1) {
+        if (isset($status_pa)) {
+            if ($current_level == 1 && $status_pa == 'next') {
                 // Jika level 1 selesai, naik ke level 2 PA 2.1
                 $new_level = 2;
                 $new_pa = '2.1';
             } elseif ($current_level == 2) {
                 if ($current_pa == '2.1') {
                     $new_pa = '2.2'; // Pindah ke PA 2.2
-                } elseif ($current_pa == '2.2') {
+                } elseif ($current_pa == '2.2' && $status_pa == 'next') {
                     $new_level = 3; // Naik ke level 3
                     $new_pa = '3.1'; // Mulai PA 3.1
                 }
             } elseif ($current_level == 3) {
                 if ($current_pa == '3.1') {
                     $new_pa = '3.2'; // Pindah ke PA 3.2
-                } elseif ($current_pa == '3.2') {
+                } elseif ($current_pa == '3.2' && $status_pa == 'next') {
                     $new_level = 4; // Naik ke level 4
                     $new_pa = '4.1'; // Mulai PA 4.1
                 }
             } elseif ($current_level == 4) {
                 if ($current_pa == '4.1') {
                     $new_pa = '4.2'; // Pindah ke PA 4.2
-                } elseif ($current_pa == '4.2') {
+                } elseif ($current_pa == '4.2' && $status_pa == 'next') {
                     $new_level = 5; // Naik ke level 5
                     $new_pa = '5.1'; // Mulai PA 5.1
                 }
             } elseif ($current_level == 5) {
                 if ($current_pa == '5.1') {
                     $new_pa = '5.2'; // Pindah ke PA 5.2
-                } elseif ($current_pa == '5.2') {
+                } elseif ($current_pa == '5.2'&& $status_pa == 'next') {
                     $new_pa = 'stop'; // Stop
                 }
             }
         } else {
-            // If status_pa is not 'next', keep current PA and level
+            // If status_pa is not 'next', new PA but current level
             $new_level = $current_level;
+            $new_pa = $new_pa;
         }
 
         // Logika untuk memperbarui PA dan Level
