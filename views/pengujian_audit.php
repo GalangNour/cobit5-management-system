@@ -19,6 +19,7 @@ $audit_detail_query = $stmt->get_result();
 if ($audit_detail_query->num_rows > 0) {
     $audit_detail = $audit_detail_query->fetch_assoc();
     $process = $audit_detail['audit_process'];
+    $id_cobit = $audit_detail['id_cobit'];
     $level = $audit_detail['level'];
     $pa = $audit_detail['pa'];
 } else {
@@ -297,7 +298,7 @@ document.getElementById('clearStorageButton').addEventListener('click', function
             },
             success: function (response) {
                 // Response is already a JavaScript object
-                if (response.status === 'error') {
+                if (response.status == 'error') {
                     Swal.fire({
                         icon: 'error',
                         title: response.title,
@@ -305,21 +306,55 @@ document.getElementById('clearStorageButton').addEventListener('click', function
                     }).then(function () {
                         window.location.href = response.redirect_url; // Redirect if needed
                     });
-                } else if (response.status === 'success') {
+                } else if (response.status == 'success') {
+                    if (response.reset == true) {
+                        localStorage.removeItem('audit_scores');
+                        localStorage.removeItem('total_score');
+                        localStorage.removeItem('total_questions');
+
+                        // Reset tampilan skor dan jumlah pertanyaan
+                        document.getElementById("totalScore").value = 0;
+                        document.getElementById("averageScore").value = 0;
+                        document.getElementById("totalQuestions").value = 0;
+                    }
+
+                    // Perbarui tampilan level dan PA
                     $('#level').text(response.new_level);
                     $('#pa').text(response.pa);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Level dan PA berhasil diperbarui',
-                        text: 'Level dan PA telah diperbarui ke level ' + response.new_level + ' dengan PA ' + response.pa
-                    }).then(function () {
-                        window.location.reload(); // Redirect if needed
-                    });
+
+                    if(response.pa == 'stop'){
+                        // Jika PA adalah 'stop', redirect ke halaman detail_project.php
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Proses selesai',
+                            text: 'Level dan PA telah selesai, akan diarahkan ke detail proyek.'
+                        }).then(function () {
+                            // Redirect ke detail_project.php dengan id_project yang sesuai
+                            localStorage.removeItem('audit_scores');
+                            localStorage.removeItem('total_score');
+                            localStorage.removeItem('total_questions');
+
+                            // Reset tampilan skor dan jumlah pertanyaan
+                            document.getElementById("totalScore").value = 0;
+                            document.getElementById("averageScore").value = 0;
+                            document.getElementById("totalQuestions").value = 0;
+                            window.location.href = 'detail_project.php?id_project=<?php echo $id_cobit; ?>';
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Level dan PA berhasil diperbarui',
+                            text: 'Level dan PA telah diperbarui ke level ' + response.new_level + ' dengan PA ' + response.pa
+                        }).then(function () {
+                            window.location.reload(); // Redirect if needed
+                        });
+                    }
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 Swal.fire('Error', 'Terjadi kesalahan saat mengirim data. (' + textStatus + ')', 'error');
             }
+
         });
     });
     // Count total questions and display on page load
