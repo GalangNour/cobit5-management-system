@@ -97,13 +97,15 @@ if (isset($_GET['id_project'])) {
                                                 <td><?php echo $desc; ?></td>
                                                 <td><?php echo $level, " - " , $pa; ?></td>
                                                 <td>
-
-                                                    <a href="pengujian_audit.php?id=<?php echo $id; ?>"
-                                                        class="btn btn-primary">Audit</a>
-                                                    <a href="delete_detail_project.php?id=<?php echo $id; ?>"
-                                                        class="btn btn-danger">Delete</a>
+                                                    <?php if ($pa == 'stop') { ?>
+                                                        <button class="btn btn-primary" disabled>Audit</button> <!-- Tombol Audit dinonaktifkan -->
+                                                    <?php } else { ?>
+                                                        <a href="pengujian_audit.php?id=<?php echo $id; ?>" class="btn btn-primary">Audit</a>
+                                                    <?php } ?>
+                                                    <a href="delete_detail_project.php?id=<?php echo $id; ?>" class="btn btn-danger">Delete</a>
                                                 </td>
                                             </tr>
+
                                             <?php
                             $no++;
                         }
