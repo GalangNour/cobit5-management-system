@@ -72,7 +72,7 @@ if (isset($_GET['id_project'])) {
                                             <tr>
                                                 <th>#</th>
                                                 <th>Name</th>
-                                                <th>Auditor</th>
+                                                <!-- <th>Auditor</th> -->
                                                 <th>Audit At</th>
                                                 <th>Action</th>
                                             </tr>
@@ -94,7 +94,7 @@ if (isset($_GET['id_project'])) {
                                             <tr>
                                                 <td><?php echo $no; ?></td>
                                                 <td><?php echo $audit_process; ?></td>
-                                                <td><?php echo $desc; ?></td>
+                                                <!-- <td><?php echo $desc; ?></td> -->
                                                 <td><?php echo $level, " - " , $pa; ?></td>
                                                 <td>
                                                     <?php if ($pa == 'stop') { ?>

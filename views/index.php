@@ -20,21 +20,12 @@
     <link href="../assets/libs/simplebar/simplebar.min.css" rel="stylesheet">
     <!-- App Css-->
     <link href="../assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
-
 </head>
-
 <body>
-
     <div id="layout-wrapper">
-
-
         <?php include 'partials/topbar.php'; ?>
-
-
         <?php include 'partials/sidebar.php'; ?>
-
         <!-- Start right Content here -->
-
         <div class="main-content">
             <div class="page-content">
                 <div class="container-fluid">
@@ -44,11 +35,35 @@
                                 <div>
                                     <h4 class="fs-16 fw-semibold mb-1 mb-md-2">Welcome, <span
                                             class="text-primary"><?php echo $_SESSION['nama'];?></span></h4>
-                                    <!-- <p class="text-muted mb-0">Here's what's happening with your store today.</p> -->
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Tentang COBIT 5</h5>
+                <p class="card-text">
+                    <strong>COBIT 5</strong> (Control Objectives for Information and Related Technologies) adalah 
+                    kerangka kerja tata kelola dan manajemen teknologi informasi yang dirancang untuk membantu 
+                    organisasi memastikan bahwa IT sejalan dengan tujuan bisnis. COBIT 5 memberikan panduan untuk:
+                </p>
+                <ul>
+                    <li>Memenuhi kebutuhan pemangku kepentingan.</li>
+                    <li>Meliputi seluruh organisasi.</li>
+                    <li>Menerapkan kerangka kerja terpadu.</li>
+                    <li>Menggunakan pendekatan holistik.</li>
+                    <li>Mengelola risiko dan meningkatkan nilai IT.</li>
+                </ul>
+                <p>
+                    Framework ini membantu organisasi menciptakan nilai dari IT dengan mengoptimalkan sumber daya 
+                    dan memitigasi risiko. COBIT 5 juga mendukung kepatuhan terhadap regulasi dan peningkatan efisiensi operasional.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
                     <!--    end row -->
 
                 </div>
@@ -68,13 +83,9 @@
     <script src="../assets/libs/metismenu/metisMenu.min.js"></script>
     <script src="../assets/libs/simplebar/simplebar.min.js"></script>
     <script src="../assets/libs/node-waves/waves.min.js"></script>
-
-
     <!-- apexcharts -->
     <script src="../assets/libs/apexcharts/apexcharts.min.js"></script>
-
     <script src="../assets/js/pages/dashboard.init.js"></script>
-
     <!-- App js -->
     <script src="../assets/js/app.js"></script>
 </body>
