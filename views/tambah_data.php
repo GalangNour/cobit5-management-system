@@ -1,8 +1,7 @@
-<?php 
+<?php
 session_start(); // Ensure session is started to access session variables
 include '../config/database.php'; 
-// Set timezone to Asia/Jakarta (WIB, GMT+7)
-date_default_timezone_set('Asia/Jakarta');
+date_default_timezone_set('Asia/Jakarta'); // Set timezone to Asia/Jakarta
 
 // Ambil id_project dari URL
 if (isset($_GET['id_project'])) {
@@ -13,8 +12,23 @@ if (isset($_GET['id_project'])) {
     exit();
 }
 
-// Fetch data from the 'question' table
-$process_codes = mysqli_query($conn, "SELECT DISTINCT process_code FROM question");
+// Query untuk mengambil semua process_code dan status PA
+$query = "
+    SELECT q.process_code
+    FROM question q
+    WHERE q.process_code NOT IN (
+        SELECT p.audit_process
+        FROM pengujian p
+        WHERE p.id_cobit = '$id_project'
+    )
+    GROUP BY q.process_code";
+
+$process_codes = mysqli_query($conn, $query);
+
+// Check for query errors
+if (!$process_codes) {
+    die("Error executing query: " . mysqli_error($conn));
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -59,8 +73,7 @@ $process_codes = mysqli_query($conn, "SELECT DISTINCT process_code FROM question
                                         <input type="hidden" name="id_project" value="<?php echo $id_project; ?>">
                                         <div class="mb-3">
                                             <label for="name" class="form-label">Audit Process</label>
-                                            <select class="form-select" id="audit_process" name="audit_process"
-                                                required>
+                                            <select class="form-select" id="audit_process" name="audit_process" required>
                                                 <option value="" disabled selected>Pilih Audit Process</option>
                                                 <?php 
                                                 while ($row = mysqli_fetch_assoc($process_codes)) {
