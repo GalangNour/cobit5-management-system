@@ -1,4 +1,4 @@
- <?php session_start() ?>
+ <?php session_start(); ?>
  <!-- Start topbar -->
  <header id="page-topbar">
      <div class="navbar-header">

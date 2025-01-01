@@ -10,9 +10,9 @@ ini_set('display_errors', 1);
 
 $response = array('success' => false, 'message' => 'Invalid request');
 
+// Redirect to dashboard if already logged in
 if (isset($_SESSION['id_users'], $_SESSION['nama'])) {
-    $response['message'] = 'Already logged in';
-    echo json_encode($response);
+    header('Location: index.php');
     exit();
 }
 
@@ -36,6 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $row = $result->fetch_assoc();
 
             if ($password == $row['password']) {
+                // Start session if not already started
+                if (session_status() == PHP_SESSION_NONE) {
+                    session_start();
+                }
+
                 $_SESSION['id_users'] = $row['id_users'];
                 $_SESSION['nama'] = $row['nama'];
                 $_SESSION['email'] = $row['email'];

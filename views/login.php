@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+// Redirect to dashboard if already logged in
+if (isset($_SESSION['id_users'], $_SESSION['nama'])) {
+    header('Location: index.php');
+    exit();
+}
+?>
 <!doctype html>
 <html lang="en">
 

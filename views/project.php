@@ -1,10 +1,14 @@
-<?php include '../config/database.php' ; ?>
+<?php 
+include '../config/database.php';
+session_start();
+$role = $_SESSION['role']; 
+?>
 <!doctype html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8" />
-    <title>Pertanyaan</title>
+    <title>Project</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Cobit 5" name="description" />
     <meta content="Cobit 5" name="author" />
@@ -39,45 +43,31 @@
             <div class="page-content">
                 <div class="container-fluid">
                     <?php
-                if (isset($_GET['message']) && $_GET['message'] == 'success') {
-                    echo "<script>
-                        Swal.fire({
-                            title: 'Berhasil!',
-                            text: 'Pertanyaan berhasil ditambahkan.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
-                    </script>";
-                }
-                if (isset($_GET['message']) && $_GET['message'] == 'edit-success') {
-                    echo "<script>
-                        Swal.fire({
-                            title: 'Berhasil!',
-                            text: 'Pertanyaan berhasil diperbarui.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
-                    </script>";
-                }
-                if (isset($_GET['message']) && $_GET['message'] == 'success-data') {
-                    echo "<script>
-                        Swal.fire({
-                            title: 'Berhasil!',
-                            text: 'Data Project berhasil diperbarui.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
-                    </script>";
-                }
-                ?>
+                    if (isset($_GET['message'])) {
+                        $messages = [
+                            'success' => 'Pertanyaan berhasil ditambahkan.',
+                            'edit-success' => 'Pertanyaan berhasil diperbarui.',
+                            'success-data' => 'Data Project berhasil diperbarui.'
+                        ];
+                        if (array_key_exists($_GET['message'], $messages)) {
+                            echo "<script>
+                                Swal.fire({
+                                    title: 'Berhasil!',
+                                    text: '{$messages[$_GET['message']]}',
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                });
+                            </script>";
+                        }
+                    }
+                    ?>
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box d-flex align-items-center justify-content-between">
-                                <!-- <div>
-                                    <h4 class="fs-16 fw-semibold mb-1 mb-md-2">Good Morning, <span
-                                            class="text-primary">Jonas!</span></h4>
-                                    <p class="text-muted mb-0">Here's what's happening with your store today.</p>
-                                </div> -->
+                                <h4 class="card-title">Data Project</h4>
+                                <?php if ($role != 'auditor') { ?>
+                                <a href="tambah_project.php" class="btn btn-primary">Tambah Project</a>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -85,16 +75,8 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-header">
-                                    <h4 class="card-title">Data Project</h4>
-                                    <a href="tambah_project.php" class="btn btn-primary"
-                                        style="margin-left: 4px;">Tambah
-                                        Project</a>
-                                </div>
                                 <div class="card-body">
-                                    <table id="datatable"
-                                        class="table table-hover table-bordered table-striped dt-responsive nowrap"
-                                        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <table id="datatable" class="table table-hover table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                         <thead>
                                             <tr>
                                                 <th>#</th>
@@ -106,36 +88,28 @@
                                         </thead>
                                         <tbody>
                                             <?php 
-                        $no = 1;
-                        $get_data = mysqli_query($conn, "SELECT * FROM cobit WHERE deleted_at IS NULL");
-
-                        // Loop through each question and display data
-                        while ($display = mysqli_fetch_array($get_data)) {
-                            $id = !empty($display['id_cobit']) ? $display['id_cobit'] : '-';
-                            $name = !empty($display['name']) ? $display['name'] : '-';
-                            $auditor = !empty($display['auditor']) ? $display['auditor'] : '-';
-                            $auditat = !empty($display['audit_at']) ? $display['audit_at'] : '-';
-                        ?>
+                                            $no = 1;
+                                            $get_data = mysqli_query($conn, "SELECT * FROM cobit WHERE deleted_at IS NULL");
+                                            while ($display = mysqli_fetch_array($get_data)) {
+                                                $id = $display['id_cobit'] ?? '-';
+                                                $name = $display['name'] ?? '-';
+                                                $auditor = $display['auditor'] ?? '-';
+                                                $auditat = $display['audit_at'] ?? '-';
+                                            ?>
                                             <tr>
-                                                <td><?php echo $no; ?></td>
+                                                <td><?php echo $no++; ?></td>
                                                 <td><?php echo $name; ?></td>
                                                 <td><?php echo $auditor; ?></td>
                                                 <td><?php echo $auditat; ?></td>
                                                 <td>
-                                                    <a href="report.php?id=<?php echo $id; ?>"
-                                                        class="btn btn-info">Report</a>
-                                                    <a href="detail_project.php?id_project=<?php echo $id; ?>"
-                                                        class="btn btn-primary">Audit</a>
-                                                    <a href="delete_project.php?id=<?php echo $id; ?>"
-                                                        class="btn btn-danger"
-                                                        onclick="return confirm('Apakah Anda yakin ingin menghapus pertanyaan ini?')">Delete</a>
-
+                                                    <a href="report.php?id=<?php echo $id; ?>" class="btn btn-info">Report</a>
+                                                    <a href="detail_project.php?id_project=<?php echo $id; ?>" class="btn btn-primary">Audit</a>
+                                                    <?php if ($role != 'auditor') { ?>
+                                                    <a href="delete_project.php?id=<?php echo $id; ?>" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus pertanyaan ini?');">Delete</a>
+                                                    <?php } ?>
                                                 </td>
                                             </tr>
-                                            <?php
-                            $no++;
-                        }
-                        ?>
+                                            <?php } ?>
                                         </tbody>
                                     </table>
                                 </div>
