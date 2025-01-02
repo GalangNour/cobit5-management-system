@@ -8,12 +8,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Ambil data dari form
     $id_project = $_POST['id_project'] ?? null;
     $status_pa = $_POST['status_pa'] ?? null;
-    $scores = $_POST['score'] ?? [];
-    $levels = $_POST['level'] ?? [];
-    $exists = $_POST['exist'] ?? [];
-    $documentEvidences = $_POST['document_evidence'] ?? [];
-    $question_ids = $_POST['question_id'] ?? [];
+    $scores = $_POST['scores'] ?? [];
+    $levels = $_POST['levels'] ?? [];
+    $exists = $_POST['exists'] ?? [];
+    $documentEvidences = $_POST['document_evidences'] ?? [];
+    $question_ids = $_POST['question_ids'] ?? [];
     
+
+    error_log("Received data:");
+    error_log("id_project: " . var_export($id_project, true));
+    error_log("status_pa: " . var_export($status_pa, true));
+    error_log("scores: " . var_export($scores, true));
+    error_log("levels: " . var_export($levels, true));
+    error_log("exists: " . var_export($exists, true));
+    error_log("document_evidences: " . var_export($documentEvidences, true));
+    error_log("question_ids: " . var_export($question_ids, true));
+
     // Validasi input
     if (is_null($id_project) || is_null($status_pa)) {
         echo json_encode(['status' => 'error', 'message' => 'Missing required data']);
@@ -61,9 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         if (!$insertQuery->execute()) {
-            error_log("Error: " . $insertQuery->error);
-            $insertSuccess = false;
+            error_log("Insert Query Error: " . $insertQuery->error);
+        } else {
+            error_log("Insert Query Success for Question ID: $question_id");
         }
+
     }
 
     // Handle level and PA updates

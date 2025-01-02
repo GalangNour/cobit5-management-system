@@ -85,6 +85,11 @@ if ($audit_detail_query->num_rows > 0) {
                                             style="background-color: red; color:white; padding: 4px;"><?php echo $pa?></span>
                                     </h4><br>
 
+                                    <div class="form-check">
+    <input type="checkbox" class="form-check-input" id="selectAllCheckbox">
+    <label class="form-check-label" for="selectAllCheckbox">Select All</label>
+</div>
+
                                     <form id="auditForm" method="post">
                                         <table
                                             class="table table-hover table-bordered table-striped dt-responsive nowrap"
@@ -293,6 +298,34 @@ if ($audit_detail_query->num_rows > 0) {
             // Determine status_pa based on the average score
             var status_pa = averageScore === 100 ? 'next' : 'stay';
 
+            // Prepare data untuk dikirim
+            var scoresArray = [];
+            var levelsArray = [];
+            var existsArray = [];
+            var documentEvidencesArray = [];
+            var questionIdsArray = [];
+
+
+            // Iterasi melalui semua pertanyaan (baris)
+            $('#auditForm tbody tr').each(function() {
+                var row = $(this);
+                var score = row.find('input[name="score[]"]').val(); // Ambil nilai score
+                var level = row.find('input[name="level[]"]').val(); // Ambil nilai level
+                var exist = row.find('input[name="exist[]"]').prop('checked') ? 1 : 0; // Ambil status checkbox exist
+                var documentEvidence = row.find('textarea[name="document_evidence[]"]').val(); // Ambil nilai evidence
+                var questionId = row.find('input[name="question_id[]"]').val(); // Ambil ID pertanyaan
+
+                // Log nilai yang akan dikirim
+                console.log('Score:', score, 'Level:', level, 'Exist:', exist, 'Evidence:', documentEvidence, 'Question ID:', questionId);
+
+                // Tambahkan nilai ke array
+                scoresArray.push(score);
+                levelsArray.push(level);
+                existsArray.push(exist);
+                documentEvidencesArray.push(documentEvidence);
+                questionIdsArray.push(questionId);
+            });
+
 
             // Send the data via AJAX
             $.ajax({
@@ -301,11 +334,14 @@ if ($audit_detail_query->num_rows > 0) {
                 data: {
                     id_project: <?php echo $id_project; ?>,
                     status_pa: status_pa,
-                    // total_score: total_score,
-                    // total_questions: total_questions,
-
-                },
+                    scores: scoresArray, // Send the scores array
+                    levels: levelsArray, // Send the levels array
+                    exists: existsArray, // Send the exists array
+                    document_evidences: documentEvidencesArray, // Send the document evidences array
+                    question_ids: questionIdsArray // Send the question IDs array
+                    },
                 success: function(response) {
+                    console.log(response);
                     // Response is already a JavaScript object
                     if (response.status == 'error') {
                         Swal.fire({
