@@ -75,13 +75,20 @@ if ($audit_detail_query->num_rows > 0) {
                                     <h4 class="card-title">Auditing Ujian</h4>
                                 </div>
                                 <div class="card-body">
-                                    <h4>Process : <span style="background-color: red; color:white; padding: 4px;"><?php echo $process?></span></h4>
-                                    <h4>Level : <span id="level" style="background-color: red; color:white; padding: 4px;"><?php echo $level?></span></h4>
-                                    <h4>PA : <span id="pa" style="background-color: red; color:white; padding: 4px;"><?php echo $pa?></span></h4><br>
-                              
+                                    <h4>Process : <span
+                                            style="background-color: red; color:white; padding: 4px;"><?php echo $process?></span>
+                                    </h4>
+                                    <h4>Level : <span id="level"
+                                            style="background-color: red; color:white; padding: 4px;"><?php echo $level?></span>
+                                    </h4>
+                                    <h4>PA : <span id="pa"
+                                            style="background-color: red; color:white; padding: 4px;"><?php echo $pa?></span>
+                                    </h4><br>
+
                                     <form id="auditForm" method="post">
-                                        <table class="table table-hover table-bordered table-striped dt-responsive nowrap"
-                                               style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <table
+                                            class="table table-hover table-bordered table-striped dt-responsive nowrap"
+                                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
@@ -109,19 +116,20 @@ if ($audit_detail_query->num_rows > 0) {
                                                     <td><?php echo $question; ?></td>
                                                     <td>
                                                         <input type="checkbox" name="exist[]" value="1"
-                                                               onchange="updateScoreAndLevel(this)">
+                                                            onchange="updateScoreAndLevel(this)">
                                                     </td>
                                                     <td><textarea name="document_evidence[]"></textarea></td>
                                                     <td>
                                                         <input type="text" name="score[]" value="0" readonly>
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="level[]" class="level-input"
-                                                               value="N" readonly>
+                                                        <input type="text" name="level[]" class="level-input" value="N"
+                                                            readonly>
                                                     </td>
                                                     <input type="hidden" name="question_id[]"
-                                                           value="<?php echo $question_id; ?>">
-                                                    <input type="hidden" name="id_project" value="<?php echo $id_project; ?>">
+                                                        value="<?php echo $question_id; ?>">
+                                                    <input type="hidden" name="id_project"
+                                                        value="<?php echo $id_project; ?>">
                                                     <input type="hidden" name="status_pa" value="<?php echo $pa; ?>">
                                                 </tr>
                                                 <?php
@@ -130,24 +138,29 @@ if ($audit_detail_query->num_rows > 0) {
                                                 ?>
                                             </tbody>
                                         </table>
-                                        <div class="mt-3">
+                                        <!-- <div class="mt-3">
                                             <span><strong>Total Score: </strong></span>
-                                            <input type="text" id="totalScore" value="0" readonly disabled>
                                         </div>
                                         <div class="mt-3">
                                             <span><strong>Total Questions: </strong></span>
-                                            <input type="text" id="totalQuestions" value="0" readonly disabled>
                                         </div>
                                         <div class="mt-3">
                                             <span><strong>Average Score: </strong></span>
-                                            <input type="text" id="averageScore" value="0" readonly disabled>
                                         </div>
                                         <div class="mt-3">
                                             <span><strong>Audit Score: </strong></span>
-                                            <input type="text" id="auditScore" value="0" readonly disabled>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary mt-3">Submit</button>
-                                        <button type="button" id="clearStorageButton" class="btn btn-danger">Clear Storage</button>
+                                        </div> -->
+                                        <input type="hidden" id="totalScore" value="0" readonly disabled>
+
+                                        <input type="hidden" id="totalQuestions" value="0" readonly disabled>
+
+                                        <input type="hidden" id="averageScore" value="0" readonly disabled>
+
+                                        <input type="hidden" id="auditScore" value="0" readonly disabled>
+
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                        <button type="button" id="clearStorageButton" class="btn btn-danger">Clear
+                                            Storage</button>
                                     </form>
                                 </div>
                             </div>
@@ -159,7 +172,6 @@ if ($audit_detail_query->num_rows > 0) {
     </div>
 
     <script>
-
     function updateScoreAndLevel(checkbox) {
         var row = checkbox.parentElement.parentElement;
         var scoreInput = row.querySelector('input[name="score[]"]');
@@ -177,9 +189,9 @@ if ($audit_detail_query->num_rows > 0) {
 
         // Save current question's state to localStorage
         var scores = JSON.parse(localStorage.getItem('audit_scores')) || {};
-        scores[questionId] = { 
-            score: parseInt(scoreInput.value, 10), 
-            level: levelInput.value 
+        scores[questionId] = {
+            score: parseInt(scoreInput.value, 10),
+            level: levelInput.value
         };
         localStorage.setItem('audit_scores', JSON.stringify(scores));
 
@@ -209,50 +221,50 @@ if ($audit_detail_query->num_rows > 0) {
     }
 
     function countTotalQuestions() {
-    // Count the number of rows in the tbody of the questions table
-    var currentQuestionCount = document.querySelectorAll('tbody tr').length;
+        // Count the number of rows in the tbody of the questions table
+        var currentQuestionCount = document.querySelectorAll('tbody tr').length;
 
-    // Retrieve the existing total from localStorage
-    var existingTotal = parseInt(localStorage.getItem('total_questions')) || 0; // Default to 0 if not found
+        // Retrieve the existing total from localStorage
+        var existingTotal = parseInt(localStorage.getItem('total_questions')) || 0; // Default to 0 if not found
 
-    // Update the total questions count
-    var newTotal = existingTotal + currentQuestionCount;
+        // Update the total questions count
+        var newTotal = existingTotal + currentQuestionCount;
 
-    // Store the new total questions in localStorage
-    localStorage.setItem('total_questions', newTotal);
+        // Store the new total questions in localStorage
+        localStorage.setItem('total_questions', newTotal);
 
-    // Update the total questions input
-    document.getElementById("totalQuestions").value = newTotal; 
-}
-function displayTotalQuestions() {
-    var totalQuestions = localStorage.getItem('total_questions') || 0; // Default to 0 if not found
-    document.getElementById("totalQuestions").value = totalQuestions; // Update the total questions input
-}
+        // Update the total questions input
+        document.getElementById("totalQuestions").value = newTotal;
+    }
 
-document.getElementById('clearStorageButton').addEventListener('click', function () {
-    // Hapus semua data dari localStorage
-    localStorage.removeItem('audit_scores');
-    localStorage.removeItem('total_score');
-    localStorage.removeItem('total_questions');
+    function displayTotalQuestions() {
+        var totalQuestions = localStorage.getItem('total_questions') || 0; // Default to 0 if not found
+        document.getElementById("totalQuestions").value = totalQuestions; // Update the total questions input
+    }
 
-    // Reset tampilan skor dan jumlah pertanyaan
-    document.getElementById("totalScore").value = 0;
-    document.getElementById("averageScore").value = 0;
-    document.getElementById("totalQuestions").value = 0;
+    document.getElementById('clearStorageButton').addEventListener('click', function() {
+        // Hapus semua data dari localStorage
+        localStorage.removeItem('audit_scores');
+        localStorage.removeItem('total_score');
+        localStorage.removeItem('total_questions');
 
-    // Hapus checkbox yang dicentang dan reset level dan score input
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
-    document.querySelectorAll('input[name="score[]"]').forEach(scoreInput => scoreInput.value = 0);
-    document.querySelectorAll('input[name="level[]"]').forEach(levelInput => levelInput.value = 'N');
+        // Reset tampilan skor dan jumlah pertanyaan
+        document.getElementById("totalScore").value = 0;
+        document.getElementById("averageScore").value = 0;
+        document.getElementById("totalQuestions").value = 0;
 
-    // Beri notifikasi kepada pengguna
-    Swal.fire({
-        icon: 'success',
-        title: 'Storage Cleared',
-        text: 'Local storage and form values have been reset.'
+        // Hapus checkbox yang dicentang dan reset level dan score input
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
+        document.querySelectorAll('input[name="score[]"]').forEach(scoreInput => scoreInput.value = 0);
+        document.querySelectorAll('input[name="level[]"]').forEach(levelInput => levelInput.value = 'N');
+
+        // Beri notifikasi kepada pengguna
+        Swal.fire({
+            icon: 'success',
+            title: 'Storage Cleared',
+            text: 'Local storage and form values have been reset.'
+        });
     });
-});
-    
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
@@ -261,75 +273,51 @@ document.getElementById('clearStorageButton').addEventListener('click', function
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-    $(document).ready(function () {
-    // Handle form submission
-    $('#auditForm').on('submit', function (e) {
-        e.preventDefault(); // Prevent normal form submission
-        
-        // First, update the total and average score
-        updateTotalScore();
-        countTotalQuestions();
-        
-        
-        // Now we can get the updated average score
-        
+    $(document).ready(function() {
+        // Handle form submission
+        $('#auditForm').on('submit', function(e) {
+            e.preventDefault(); // Prevent normal form submission
 
-        // Ambil data dari LocalStorage
-        var scores = JSON.parse(localStorage.getItem('audit_scores')) || {};
-        var totalScore = localStorage.getItem('total_score') || 0;
-        var questionCount = localStorage.getItem('total_questions') || 0;
-
-        var averageScore = totalScore / questionCount
-
-        // Determine status_pa based on the average score
-        var status_pa = averageScore === 100 ? 'next' : 'stay';
+            // First, update the total and average score
+            updateTotalScore();
+            countTotalQuestions();
 
 
-        // Send the data via AJAX
-        $.ajax({
-            url: 'update_level_pa.php', // The PHP script that will process the form data
-            method: 'POST', 
-            data: {
-                id_project: <?php echo $id_project; ?>,
-                status_pa: status_pa,
-                // total_score: total_score,
-                // total_questions: total_questions,
-                
-            },
-            success: function (response) {
-                // Response is already a JavaScript object
-                if (response.status == 'error') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: response.title,
-                        text: response.text
-                    }).then(function () {
-                        window.location.href = response.redirect_url; // Redirect if needed
-                    });
-                } else if (response.status == 'success') {
-                    if (response.reset == true) {
-                        localStorage.removeItem('audit_scores');
-                        localStorage.removeItem('total_score');
-                        localStorage.removeItem('total_questions');
+            // Ambil data dari LocalStorage
+            var scores = JSON.parse(localStorage.getItem('audit_scores')) || {};
+            var totalScore = localStorage.getItem('total_score') || 0;
+            var questionCount = localStorage.getItem('total_questions') || 0;
 
-                        // Reset tampilan skor dan jumlah pertanyaan
-                        document.getElementById("totalScore").value = 0;
-                        document.getElementById("averageScore").value = 0;
-                        document.getElementById("totalQuestions").value = 0;
-                    }
+            var averageScore = totalScore / questionCount
 
-                    // Perbarui tampilan level dan PA
-                    $('#level').text(response.new_level);
-                    $('#pa').text(response.pa);
+            // Determine status_pa based on the average score
+            var status_pa = averageScore === 100 ? 'next' : 'stay';
 
-                    if(response.pa == 'stop'){
-                        // Jika PA adalah 'stop', redirect ke halaman detail_project.php
+
+            // Send the data via AJAX
+            $.ajax({
+                url: 'update_level_pa.php', // The PHP script that will process the form data
+                method: 'POST',
+                data: {
+                    id_project: <?php echo $id_project; ?>,
+                    status_pa: status_pa,
+                    // total_score: total_score,
+                    // total_questions: total_questions,
+
+                },
+                success: function(response) {
+                    // Response is already a JavaScript object
+                    if (response.status == 'error') {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Proses selesai',
-                            text: 'Level dan PA telah selesai, akan diarahkan ke detail proyek.'
-                        }).then(function () {
-                            // Redirect ke detail_project.php dengan id_project yang sesuai
+                            title: response.title,
+                            text: response.text
+                        }).then(function() {
+                            window.location.href = response
+                                .redirect_url; // Redirect if needed
+                        });
+                    } else if (response.status == 'success') {
+                        if (response.reset == true) {
                             localStorage.removeItem('audit_scores');
                             localStorage.removeItem('total_score');
                             localStorage.removeItem('total_questions');
@@ -338,30 +326,54 @@ document.getElementById('clearStorageButton').addEventListener('click', function
                             document.getElementById("totalScore").value = 0;
                             document.getElementById("averageScore").value = 0;
                             document.getElementById("totalQuestions").value = 0;
-                            window.location.href = 'detail_project.php?id_project=<?php echo $id_cobit; ?>';
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Level dan PA berhasil diperbarui',
-                            text: 'Level dan PA telah diperbarui ke level ' + response.new_level + ' dengan PA ' + response.pa
-                        }).then(function () {
-                            window.location.reload(); // Redirect if needed
-                        });
+                        }
+
+                        // Perbarui tampilan level dan PA
+                        $('#level').text(response.new_level);
+                        $('#pa').text(response.pa);
+
+                        if (response.pa == 'stop') {
+                            // Jika PA adalah 'stop', redirect ke halaman detail_project.php
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Proses selesai',
+                                text: 'Level dan PA telah selesai, akan diarahkan ke detail proyek.'
+                            }).then(function() {
+                                // Redirect ke detail_project.php dengan id_project yang sesuai
+                                localStorage.removeItem('audit_scores');
+                                localStorage.removeItem('total_score');
+                                localStorage.removeItem('total_questions');
+
+                                // Reset tampilan skor dan jumlah pertanyaan
+                                document.getElementById("totalScore").value = 0;
+                                document.getElementById("averageScore").value = 0;
+                                document.getElementById("totalQuestions").value = 0;
+                                window.location.href =
+                                    'detail_project.php?id_project=<?php echo $id_cobit; ?>';
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Level dan PA berhasil diperbarui',
+                                text: 'Level dan PA telah diperbarui ke level ' +
+                                    response.new_level + ' dengan PA ' + response.pa
+                            }).then(function() {
+                                window.location.reload(); // Redirect if needed
+                            });
+                        }
                     }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    Swal.fire('Error', 'Terjadi kesalahan saat mengirim data. (' +
+                        textStatus + ')', 'error');
                 }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                Swal.fire('Error', 'Terjadi kesalahan saat mengirim data. (' + textStatus + ')', 'error');
-            }
 
+            });
         });
+        // Count total questions and display on page load
+        displayTotalQuestions();
     });
-    // Count total questions and display on page load
-    displayTotalQuestions();
-});
-
-
-</script>
+    </script>
 </body>
+
 </html>

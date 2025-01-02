@@ -1,20 +1,10 @@
-<?php 
-include '../config/database.php';// Ambil id_project dari URL
-if (isset($_GET['id_project'])) {
-    $id_project = $_GET['id_project'];
-} else {
-    // Jika id_project tidak ada di URL, redirect atau tampilkan pesan error
-    header("Location: project.php");
-    exit();
-}
-
- ?>
+<?php include '../config/database.php' ; ?>
 <!doctype html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8" />
-    <title>Pertanyaan</title>
+    <title>Process Code</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Cobit 5" name="description" />
     <meta content="Cobit 5" name="author" />
@@ -48,20 +38,43 @@ if (isset($_GET['id_project'])) {
         <div class="main-content">
             <div class="page-content">
                 <div class="container-fluid">
+                    <?php
+                if (isset($_GET['message']) && $_GET['message'] == 'success') {
+                    echo "<script>
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: 'Pertanyaan berhasil ditambahkan.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    </script>";
+                }
+                if (isset($_GET['message']) && $_GET['message'] == 'edit-success') {
+                    echo "<script>
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: 'Pertanyaan berhasil diperbarui.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    </script>";
+                }
+                ?>
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box d-flex align-items-center justify-content-between">
                             </div>
                         </div>
                     </div>
+                    <!--    end row -->
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title me-2">Detail Project</h4>
-                                    <a href="tambah_data.php?id_project=<?php echo $id_project; ?>"
-                                        class="btn btn-primary">Tambah Data</a>
-
+                                    <h4 class="card-title">Data Process Code</h4>
+                                    <a href="tambah_process_code.php" class="btn btn-primary"
+                                        style="margin-left: 4px;">Tambah
+                                        Process Code</a>
                                 </div>
                                 <div class="card-body">
                                     <table id="datatable"
@@ -70,46 +83,36 @@ if (isset($_GET['id_project'])) {
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Name</th>
-                                                <!-- <th>Auditor</th> -->
-                                                <th>Audit At</th>
-                                                <th>Action</th>
+                                                <th>Nama Process Code</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php 
                         $no = 1;
-                        $get_data = mysqli_query($conn, "SELECT * FROM pengujian WHERE id_cobit = '$id_project'");
+                        $get_data = mysqli_query($conn, "SELECT * FROM process_code");
 
                         // Loop through each question and display data
                         while ($display = mysqli_fetch_array($get_data)) {
-                            $id = !empty($display['id_pengujian']) ? $display['id_pengujian'] : '-';
-                            $cobit = !empty($display['id_cobit']) ? $display['id_cobit'] : '-';
-                            $audit_process = !empty($display['audit_process']) ? $display['audit_process'] : '-';
-                            $desc = !empty($display['description']) ? $display['description'] : '-';
-                            $level = !empty($display['level']) ? $display['level'] : '-';
-                            $pa = !empty($display['pa']) ? $display['pa'] : '-';
+                            $id = $display['id_process_code'];
+                            $processCode = !empty($display['nama_process_code']) ? $display['nama_process_code'] : '-';
                         ?>
                                             <tr>
                                                 <td><?php echo $no; ?></td>
-                                                <td><?php echo $audit_process; ?></td>
-                                                <!-- <td><?php echo $desc; ?></td> -->
-                                                <td><?php echo $level, " - " , $pa; ?></td>
-                                                <td>
-                                                    <?php if ($pa == 'stop') { ?>
-                                                    <button class="btn btn-primary" disabled>Audit</button>
-                                                    <!-- Tombol Audit dinonaktifkan -->
-                                                    <?php } else { ?>
-                                                    <a href="pengujian_audit.php?id=<?php echo $id; ?>"
-                                                        class="btn btn-primary">Audit</a>
-                                                    <?php } ?>
-                                                    <a href="delete_detail_project.php?id=<?php echo $id; ?>"
-                                                        class="btn btn-danger">Delete</a>
-                                                    <a href="report_project.php?id=<?php echo $id; ?>"
-                                                        class="btn btn-warning">Report</a> <!-- Tombol Report -->
-                                                </td>
-                                            </tr>
+                                                <td><?php echo $processCode; ?></td>
 
+                                                <!-- <td>
+                                                    <div class="btn-group" role="group" aria-label="Action Buttons">
+                                                        <a href="edit_question.php?id=<?php echo $id; ?>"
+                                                            class="btn btn-warning me-2">Edit</a>
+                                                        <a href="delete_question.php?id=<?php echo $id; ?>"
+                                                            class="btn btn-danger"
+                                                            onclick="return confirm('Apakah Anda yakin ingin menghapus pertanyaan ini?')">Delete</a>
+                                                    </div>
+                                                </td> -->
+
+
+
+                                            </tr>
                                             <?php
                             $no++;
                         }
@@ -120,6 +123,8 @@ if (isset($_GET['id_project'])) {
                             </div>
                         </div> <!-- end col -->
                     </div>
+
+
                 </div>
                 <!-- end container-fluid -->
             </div>

@@ -33,16 +33,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $level = $audit_detail['level'];
         $pa = $audit_detail['pa'];
     } else {
-        echo "<script>Swal.fire('Error', 'Data not found!', 'error').then(function() {
-            window.location = 'project.php';
-        });</script>";
+        echo json_encode(['status' => 'error', 'message' => 'Data not found']);
         exit();
     }
 
-    // Proses penyimpanan nilai audit
+    // Proses penyimpanan nilai audit   
     $insertQuery = $conn->prepare("INSERT INTO audit (id_pengujian, question_id, score, level, exist, document_evidence, level_audit, pa_audit) 
                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
+    $insertSuccess = true;
     foreach ($scores as $index => $score) {
         $question_id = $question_ids[$index];
         $questionLevel = $levels[$index] ?? 'N';
@@ -63,11 +62,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$insertQuery->execute()) {
             error_log("Error: " . $insertQuery->error);
+            $insertSuccess = false;
         }
     }
 
     // Handle level and PA updates
-    if (isset($id_project) && isset($status_pa)) {
+    if ($insertSuccess && isset($id_project) && isset($status_pa)) {
         // Mengambil level dan PA yang ada
         $level_query = $conn->prepare("SELECT level, pa FROM pengujian WHERE id_pengujian = ?");
         $level_query->bind_param("i", $id_project);
