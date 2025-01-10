@@ -103,8 +103,7 @@ if (isset($_GET['id_project'])) {
                                                     <a href="pengujian_audit.php?id=<?php echo $id; ?>"
                                                         class="btn btn-primary">Audit</a>
                                                     <?php } ?>
-                                                    <a href="delete_detail_project.php?id=<?php echo $id; ?>"
-                                                        class="btn btn-danger">Delete</a>
+                                                    <a href="delete_detail_project.php?id=<?php echo $id; ?>&id_project=<?php echo $id_project; ?>" class="btn btn-danger">Delete</a>
                                                     <a href="report_project.php?id=<?php echo $id; ?>"
                                                         class="btn btn-warning">Report</a> <!-- Tombol Report -->
                                                 </td>

@@ -16,7 +16,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("issis", $id_cobit, $audit_process, $description, $level, $pa);
 
     if ($stmt->execute()) {
-        header("Location: project.php?message=success-data");
+        // header("Location: project.php?message=success-data");
+        header("Location: detail_project.php?id_project=$id_cobit&message=success");
     } else {
         header("Location: project.php?message=error-data");
     }

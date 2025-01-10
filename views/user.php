@@ -1,14 +1,10 @@
-<?php 
-include '../config/database.php';
-session_start();
-$role = $_SESSION['role']; 
-?>
+<?php include '../config/database.php' ; ?>
 <!doctype html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8" />
-    <title>Project</title>
+    <title>Pertanyaan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Cobit 5" name="description" />
     <meta content="Cobit 5" name="author" />
@@ -43,29 +39,30 @@ $role = $_SESSION['role'];
             <div class="page-content">
                 <div class="container-fluid">
                     <?php
-                    if (isset($_GET['message'])) {
-                        $messages = [
-                            'success' => 'Pertanyaan berhasil ditambahkan.',
-                            'edit-success' => 'Pertanyaan berhasil diperbarui.',
-                            'success-data' => 'Data Project berhasil diperbarui.'
-                        ];
-                        if (array_key_exists($_GET['message'], $messages)) {
-                            echo "<script>
-                                Swal.fire({
-                                    title: 'Berhasil!',
-                                    text: '{$messages[$_GET['message']]}',
-                                    icon: 'success',
-                                    confirmButtonText: 'OK'
-                                });
-                            </script>";
-                        }
-                    }
-                    ?>
+                if (isset($_GET['message']) && $_GET['message'] == 'success') {
+                    echo "<script>
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: 'User berhasil ditambahkan.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    </script>";
+                }
+                if (isset($_GET['message']) && $_GET['message'] == 'edit-success') {
+                    echo "<script>
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: 'User berhasil diperbarui.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    </script>";
+                }
+                ?>
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box d-flex align-items-center justify-content-between">
-                                <h4 class="card-title">Data Project</h4>
-                                <a href="tambah_project.php" class="btn btn-primary">Tambah Project</a>
                             </div>
                         </div>
                     </div>
@@ -73,41 +70,55 @@ $role = $_SESSION['role'];
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Data Users</h4>
+                                    <a href="tambah_user.php" class="btn btn-primary" style="margin-left: 4px;">Tambah
+                                        Users</a>
+                                </div>
                                 <div class="card-body">
-                                    <table id="datatable" class="table table-hover table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <table id="datatable"
+                                        class="table table-hover table-bordered table-striped dt-responsive nowrap"
+                                        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Name</th>
-                                                <th>Auditor</th>
-                                                <th>Audit At</th>
+                                                <th>Nama</th>
+                                                <th>Email</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php 
-                                            $no = 1;
-                                            $get_data = mysqli_query($conn, "SELECT * FROM cobit WHERE deleted_at IS NULL");
-                                            while ($display = mysqli_fetch_array($get_data)) {
-                                                $id = $display['id_cobit'] ?? '-';
-                                                $name = $display['name'] ?? '-';
-                                                $auditor = $display['auditor'] ?? '-';
-                                                $auditat = $display['audit_at'] ?? '-';
-                                            ?>
+                        $no = 1;
+                        $get_data = mysqli_query($conn, "SELECT * FROM users WHERE role = 'auditor'");
+
+                        while ($display = mysqli_fetch_array($get_data)) {
+                            $id = $display['id_users'];
+                            $nama = !empty($display['nama']) ? $display['nama'] : '-';
+                            $email = !empty($display['email']) ? $display['email'] : '-';
+                        ?>
                                             <tr>
-                                                <td><?php echo $no++; ?></td>
-                                                <td><?php echo $name; ?></td>
-                                                <td><?php echo $auditor; ?></td>
-                                                <td><?php echo $auditat; ?></td>
+                                                <td><?php echo $no; ?></td>
+                                                <td><?php echo $nama; ?></td>
+                                                <td><?php echo $email; ?></td>
+
                                                 <td>
-                                                    <a href="report.php?id=<?php echo $id; ?>" class="btn btn-info">Report</a>
-                                                    <a href="detail_project.php?id_project=<?php echo $id; ?>" class="btn btn-primary">Audit</a>
-                                                  
-                                                    <a href="delete_project.php?id=<?php echo $id; ?>" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus pertanyaan ini?');">Delete</a>
-                                               
+                                                    <div class="btn-group" role="group" aria-label="Action Buttons">
+                                                        <a href="edit_user.php?id=<?php echo $id; ?>"
+                                                            class="btn btn-warning me-2">Edit</a>
+                                                        <a href="delete_user.php?id=<?php echo $id; ?>"
+                                                            class="btn btn-danger"
+                                                            onclick="return confirm('Apakah Anda yakin ingin menghapus user ini?')">Delete</a>
+                                                    </div>
                                                 </td>
+
+
+
                                             </tr>
-                                            <?php } ?>
+                                            <?php
+                            $no++;
+                        }
+                        ?>
                                         </tbody>
                                     </table>
                                 </div>

@@ -13,42 +13,26 @@
                         <span>Dashboard</span>
                     </a>
                 </li>
-                <!-- <li>
-                    <a href="process_code.php" class="">
-                        <i class="fas fa-question-circle"></i>
-                        <span>Process Code</span>
-                    </a>
-                </li> -->
-                <!-- <li>
-                    <a href="perspektif.php" class="">
-                        <i class="fas fa-chart-pie"></i>
-                        <span>Perspektif</span>
-                    </a>
-                </li> -->
                 <li>
                     <a href="question.php" class="">
                         <i class="fas fa-question-circle"></i>
                         <span>Pertanyaan</span>
                     </a>
                 </li>
-                <!-- <li>
-                    <a href="prepengujian.php" class="">
-                        <i class="fas fa-flask"></i>
-                        <span>Pengujian</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="hasil2.php" class="">
-                        <i class="fas fa-poll"></i>
-                        <span>Hasil</span>
-                    </a>
-                </li> -->
                 <li>
                     <a href="project.php" class="">
                         <i class="fas fa-poll"></i>
                         <span>Project</span>
                     </a>
                 </li>
+                <?php if ($role != 'auditor') { ?>
+                <li>
+                    <a href="user.php" class="">
+                        <i class="fas fa-poll"></i>
+                        <span>Users</span>
+                    </a>
+                </li>
+                <?php } ?>
             </ul>
         </div>
         <!-- Sidebar -->

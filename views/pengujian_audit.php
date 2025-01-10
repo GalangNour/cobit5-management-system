@@ -100,8 +100,8 @@ if ($audit_detail_query->num_rows > 0) {
                                                     <th>Question</th>
                                                     <th>Exist</th>
                                                     <th>Document Evidence</th>
-                                                    <th>Score</th>
-                                                    <th>Level</th>
+                                                    <!-- <th>Score</th>
+                                                    <th>Level</th> -->
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -123,14 +123,17 @@ if ($audit_detail_query->num_rows > 0) {
                                                         <input type="checkbox" name="exist[]" value="1"
                                                             onchange="updateScoreAndLevel(this)">
                                                     </td>
-                                                    <td><textarea name="document_evidence[]"></textarea></td>
                                                     <td>
-                                                        <input type="text" name="score[]" value="0" readonly>
+                                                        <textarea name="document_evidence[]"></textarea>
+                                                        <input type="hidden" name="score[]" value="0" readonly>
+                                                        <input type="hidden" name="level[]" class="level-input" value="N"
+                                                        readonly>
+                                                    </td>
+                                                    <!-- <td>
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="level[]" class="level-input" value="N"
-                                                            readonly>
-                                                    </td>
+                                                       
+                                                    </td> -->
                                                     <input type="hidden" name="question_id[]"
                                                         value="<?php echo $question_id; ?>">
                                                     <input type="hidden" name="id_project"
@@ -143,19 +146,7 @@ if ($audit_detail_query->num_rows > 0) {
                                                 ?>
                                             </tbody>
                                         </table>
-                                        <!-- <div class="mt-3">
-                                            <span><strong>Total Score: </strong></span>
-                                        </div>
-                                        <div class="mt-3">
-                                            <span><strong>Total Questions: </strong></span>
-                                        </div>
-                                        <div class="mt-3">
-                                            <span><strong>Average Score: </strong></span>
-                                        </div>
-                                        <div class="mt-3">
-                                            <span><strong>Audit Score: </strong></span>
-                                        </div> -->
-                                        <input type="hidden" id="totalScore" value="0" readonly disabled>
+                                        <input type="text" id="totalScore" value="0" readonly disabled>
 
                                         <input type="hidden" id="totalQuestions" value="0" readonly disabled>
 
@@ -177,6 +168,10 @@ if ($audit_detail_query->num_rows > 0) {
     </div>
 
     <script>
+    window.addEventListener('beforeunload', function() {
+    // Reset total_score ketika keluar dari halaman
+        localStorage.removeItem('audit_scores');
+    });
     function updateScoreAndLevel(checkbox) {
         var row = checkbox.parentElement.parentElement;
         var scoreInput = row.querySelector('input[name="score[]"]');
