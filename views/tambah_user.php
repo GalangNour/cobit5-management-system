@@ -4,19 +4,33 @@ include '../config/database.php';
 if (isset($_POST['submit'])) {
     $nama = $_POST['nama'];
     $email = $_POST['email'];
-    $password = md5($_POST['password']); // Menggunakan MD5
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Menggunakan password_hash
     $role = 'auditor';
 
-    $query = "INSERT INTO users (nama, email, password, role) VALUES ('$nama', '$email', '$password', '$role')";
-    $result = mysqli_query($conn, $query);
+    // Periksa apakah email sudah ada di database
+    $stmt = $conn->prepare("SELECT email FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
 
-    if ($result) {
-        header("Location: user.php?message=success");
+    if ($stmt->num_rows > 0) {
+        echo "<script>alert('Email sudah digunakan, silakan gunakan email lain.');</script>";
     } else {
-        echo "<script>alert('Terjadi kesalahan saat menambahkan data.');</script>";
+        // Jika email belum ada, masukkan data ke database
+        $stmt = $conn->prepare("INSERT INTO users (nama, email, password, role) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $nama, $email, $password, $role);
+
+        if ($stmt->execute()) {
+            header("Location: user.php?message=success");
+        } else {
+            echo "<script>alert('Terjadi kesalahan saat menambahkan data.');</script>";
+        }
     }
+    $stmt->close();
 }
 ?>
+
+
 
 <!doctype html>
 <html lang="en">

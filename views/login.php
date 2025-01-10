@@ -1,17 +1,7 @@
-<?php
-session_start();
-
-// Redirect to dashboard if already logged in
-if (isset($_SESSION['id_users'], $_SESSION['nama'])) {
-    header('Location: index.php');
-    exit();
-}
-?>
 <!doctype html>
 <html lang="en">
 
 <head>
-
     <meta charset="utf-8" />
     <title>Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +9,6 @@ if (isset($_SESSION['id_users'], $_SESSION['nama'])) {
     <meta content="Codebucks" name="author" />
     <!-- App favicon -->
     <link rel="shortcut icon" href="../assets/images/favicon.ico">
-
 
     <!-- dark layout js -->
     <script src="../assets/js/pages/layout.js"></script>
@@ -32,7 +21,6 @@ if (isset($_SESSION['id_users'], $_SESSION['nama'])) {
     <link href="../assets/libs/simplebar/simplebar.min.css" rel="stylesheet">
     <!-- App Css-->
     <link href="../assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
-
 </head>
 
 <body>
@@ -49,26 +37,18 @@ if (isset($_SESSION['id_users'], $_SESSION['nama'])) {
                         <div class="p-2 mt-5">
                             <form id="loginForm">
                                 <div class="input-group auth-form-group-custom mb-3">
-                                    <span class="input-group-text bg-primary bg-opacity-10 fs-16 " id="basic-addon1"><i
-                                            class="mdi mdi-account-outline auti-custom-input-icon"></i></span>
-                                    <input type="email" name="email" id="email" class="form-control"
-                                        placeholder="Enter email" aria-label="Email" aria-describedby="basic-addon1">
+                                    <span class="input-group-text bg-primary bg-opacity-10 fs-16 " id="basic-addon1"><i class="mdi mdi-account-outline auti-custom-input-icon"></i></span>
+                                    <input type="email" name="email" id="email" class="form-control" placeholder="Enter email" aria-label="Email" aria-describedby="basic-addon1" required>
                                 </div>
 
                                 <div class="input-group auth-form-group-custom mb-3">
-                                    <span class="input-group-text bg-primary bg-opacity-10 fs-16" id="basic-addon2"><i
-                                            class="mdi mdi-lock-outline auti-custom-input-icon"></i></span>
-                                    <input type="password" name="password" class="form-control" id="password"
-                                        placeholder="Enter password" aria-label="Username"
-                                        aria-describedby="basic-addon1">
+                                    <span class="input-group-text bg-primary bg-opacity-10 fs-16" id="basic-addon2"><i class="mdi mdi-lock-outline auti-custom-input-icon"></i></span>
+                                    <input type="password" name="password" class="form-control" id="password" placeholder="Enter password" aria-label="Username" aria-describedby="basic-addon1" required>
                                 </div>
-
 
                                 <div class="pt-3 text-center">
-                                    <button class="btn btn-primary w-xl waves-effect waves-light" type="submit">Log
-                                        In</button>
+                                    <button class="btn btn-primary w-xl waves-effect waves-light" type="submit">Log In</button>
                                 </div>
-
                             </form>
                         </div>
 
@@ -96,42 +76,41 @@ if (isset($_SESSION['id_users'], $_SESSION['nama'])) {
     <script src="../assets/js/app.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const formData = new FormData(this);
 
-        fetch('proses_login.php', {
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('proses_login.php', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.text()) // change to text to inspect the raw response
+            .then(response => response.json())  // Expect JSON response
             .then(data => {
-                console.log('Raw response:', data); // Log the raw response
-                const jsonData = JSON.parse(data); // Parse the JSON data
-                if (jsonData.success) {
+                if (data.success) {
                     Swal.fire({
                         title: 'Login Berhasil',
                         icon: 'success'
                     }).then(() => {
-                        location = 'index.php';
+                        location = 'index.php'; // Redirect to dashboard after success
                     });
                 } else {
                     Swal.fire({
                         title: 'Login Gagal',
-                        text: jsonData.message,
+                        text: data.message,
                         icon: 'error'
                     }).then(() => {
-                        history.back();
+                        document.getElementById('password').value = '';  // Clear password field
+                        document.getElementById('email').focus();  // Focus on the email field
                     });
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
             });
-    });
+        });
     </script>
-
 </body>
 
 </html>

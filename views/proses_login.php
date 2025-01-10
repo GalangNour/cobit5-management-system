@@ -22,7 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ob_start();
 
         $email = $_POST['email'];
-        $password = md5($_POST['password']);
+        $password = $_POST['password'];
+        // $password = md5($_POST['password']);
 
         $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
@@ -35,17 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result->num_rows == 1) {
             $row = $result->fetch_assoc();
 
-            if ($password == $row['password']) {
-                // Start session if not already started
-                if (session_status() == PHP_SESSION_NONE) {
-                    session_start();
-                }
-
+            if (password_verify($_POST['password'], $row['password'])) {
+                // Password cocok, login berhasil
                 $_SESSION['id_users'] = $row['id_users'];
                 $_SESSION['nama'] = $row['nama'];
                 $_SESSION['email'] = $row['email'];
                 $_SESSION['role'] = $row['role'];
-
+            
                 $response['success'] = true;
                 $response['message'] = 'Login successful';
             } else {
