@@ -7,25 +7,26 @@ header('Content-Type: application/json');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Ambil data dari form
     $id_project = $_POST['id_project'] ?? null;
-    $status_pa = $_POST['status_pa'] ?? null;
+    $status_level = $_POST['status_level'] ?? null;
+    $pa = $_POST['pa'] ?? [];
     $scores = $_POST['scores'] ?? [];
     $levels = $_POST['levels'] ?? [];
     $exists = $_POST['exists'] ?? [];
     $documentEvidences = $_POST['document_evidences'] ?? [];
     $question_ids = $_POST['question_ids'] ?? [];
-    
 
-    error_log("Received data:");
-    error_log("id_project: " . var_export($id_project, true));
-    error_log("status_pa: " . var_export($status_pa, true));
-    error_log("scores: " . var_export($scores, true));
-    error_log("levels: " . var_export($levels, true));
-    error_log("exists: " . var_export($exists, true));
-    error_log("document_evidences: " . var_export($documentEvidences, true));
-    error_log("question_ids: " . var_export($question_ids, true));
+    // error_log("Received data:");
+    // error_log("id_project: " . var_export($id_project, true));
+    error_log("status_level: " . var_export($status_level, true));
+    // error_log("scores: " . var_export($scores, true));
+    error_log("Pa: " . var_export($pa, true));
+    // error_log("levels: " . var_export($levels, true));
+    // error_log("exists: " . var_export($exists, true));
+    // error_log("document_evidences: " . var_export($documentEvidences, true));
+    // error_log("question_ids: " . var_export($question_ids, true));
 
     // Validasi input
-    if (is_null($id_project) || is_null($status_pa)) {
+    if (is_null($id_project)) {
         echo json_encode(['status' => 'error', 'message' => 'Missing required data']);
         exit();
     }
@@ -41,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $audit_detail = $audit_detail_query->fetch_assoc();
         $process = $audit_detail['audit_process'];
         $level = $audit_detail['level'];
-        $pa = $audit_detail['pa'];
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Data not found']);
         exit();
@@ -51,122 +51,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $insertQuery = $conn->prepare("INSERT INTO audit (id_pengujian, question_id, score, level, exist, document_evidence, level_audit, pa_audit) 
                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
-    $insertSuccess = true;
-    foreach ($scores as $index => $score) {
-        $question_id = $question_ids[$index];
-        $questionLevel = $levels[$index] ?? 'N';
-        $existValue = $exists[$index] ?? 0;
-        $documentEvidence = $documentEvidences[$index] ?? '';
+        $insertSuccess = true;
+        foreach ($scores as $index => $score) {
+            $question_id = $question_ids[$index];
+            $questionLevel = $levels[$index] ?? 'N';
+            $existValue = $exists[$index] ?? 0;
+            $documentEvidence = $documentEvidences[$index] ?? '';
+            $paValue = $pa[$index];
 
-        $insertQuery->bind_param(
-            "iiisisss",
-            $id_project,
-            $question_id,
-            $score,
-            $questionLevel,
-            $existValue,
-            $documentEvidence,
-            $level,
-            $pa
-        );
+
+            $insertQuery->bind_param(
+                "iiisisss",
+                $id_project,
+                $question_id,
+                $score,
+                $questionLevel,
+                $existValue,
+                $documentEvidence,
+                $level,
+                $paValue,
+            );
 
         if (!$insertQuery->execute()) {
-            error_log("Insert Query Error: " . $insertQuery->error);
-        } else {
-            error_log("Insert Query Success for Question ID: $question_id");
+            // error_log("Insert Query Error: " . $insertQuery->error);
+            $insertSuccess = false;
         }
-
     }
 
-    // Handle level and PA updates
-    if ($insertSuccess && isset($id_project) && isset($status_pa)) {
-        // Mengambil level dan PA yang ada
-        $level_query = $conn->prepare("SELECT level, pa FROM pengujian WHERE id_pengujian = ?");
+    // Handle level updates
+    if ($insertSuccess && isset($id_project)) {
+        // Mengambil level saat ini
+        $level_query = $conn->prepare("SELECT level FROM pengujian WHERE id_pengujian = ?");
         $level_query->bind_param("i", $id_project);
         $level_query->execute();
         $level_result = $level_query->get_result();
         $level_row = $level_result->fetch_assoc();
         $current_level = $level_row['level'];
-        $current_pa = $level_row['pa'];
 
-        // Debugging: Log the current level and PA
-        error_log("Current level: " . $current_level . ", Current PA: " . $current_pa);
-
-        // Add debug log for status_pa
-        error_log("Received status_pa: " . $status_pa);
+        // Debugging: Log the current level
+        error_log("Current level: " . $current_level);
 
         $new_level = $current_level;
-        $new_pa = $current_pa;
 
-        $reset = true;
-
-        // Logika kenaikan PA dan level
-        if (isset($status_pa)) {
-            if ($current_level == 1 && $status_pa == 'next') {
-                // Jika level 1 selesai, naik ke level 2 PA 2.1
-                $new_level = 2;
-                $new_pa = '2.1';
-            }elseif ($current_level == 2) {
-                if ($current_pa == '2.1') {
-                    $new_pa = '2.2'; // Pindah ke PA 2.2
-                    $reset = false;
-                } elseif ($current_pa == '2.2' && $status_pa == 'next') {
-                    $new_level = 3; // Naik ke level 3
-                    $new_pa = '3.1'; // Mulai PA 3.1
-                }else{
-                    $new_pa = 'stop';
-                }
-            } elseif ($current_level == 3) {
-                if ($current_pa == '3.1') {
-                    $new_pa = '3.2'; // Pindah ke PA 3.2
-                    $reset = false;
-                } elseif ($current_pa == '3.2' && $status_pa == 'next') {
-                    $new_level = 4; // Naik ke level 4
-                    $new_pa = '4.1'; // Mulai PA 4.1
-                }else{
-                    $new_pa = 'stop';
-                }
-            } elseif ($current_level == 4) {
-                if ($current_pa == '4.1') {
-                    $new_pa = '4.2'; // Pindah ke PA 4.2
-                    $reset = false;
-                } elseif ($current_pa == '4.2' && $status_pa == 'next') {
-                    $new_level = 5; // Naik ke level 5
-                    $new_pa = '5.1'; // Mulai PA 5.1
-                }else{
-                    $new_pa = 'stop';
-                }
-            } elseif ($current_level == 5) {
-                if ($current_pa == '5.1') {
-                    $new_pa = '5.2'; // Pindah ke PA 5.2
-                } elseif ($current_pa == '5.2'&& $status_pa == 'next') {
-                    $new_pa = 'stop'; // Stop
-                }
+        // Logika kenaikan level
+        if (isset($status_level) && $status_level == 'next') {
+            if ($current_level < 5) { // Maksimal level adalah 5
+                $new_level = $current_level + 1;
             }
-        } else {
-            // If status_pa is not 'next', new PA but current level
+        }else{
+            $status_level = "stop";
             $new_level = $current_level;
-            $new_pa = $new_pa;
         }
 
-        // Logika untuk memperbarui PA dan Level
-        $update_level_pa = $conn->prepare("UPDATE pengujian SET level = ?, pa = ? WHERE id_pengujian = ?");
-        $update_level_pa->bind_param("ssi", $new_level, $new_pa, $id_project);
+        // Logika untuk memperbarui level
+        $update_level = $conn->prepare("UPDATE pengujian SET level = ?, pa = ? WHERE id_pengujian = ?");
+        $update_level->bind_param("ssi", $new_level, $status_level, $id_project);
 
-        if ($update_level_pa->execute()) {
+        if ($update_level->execute()) {
             $response = [
                 'status' => 'success',
-                'new_level' => $new_level,
-                'pa' => $new_pa,
-                'reset' => $reset,
+                'status_level' => $status_level,
+                'new_level' => $new_level
             ];
         } else {
             $response = [
                 'status' => 'error',
-                'message' => 'Error updating level and PA: ' . $update_level_pa->error
+                'message' => 'Error updating level: ' . $update_level->error
             ];
         }
-
     }
 
     echo json_encode($response);

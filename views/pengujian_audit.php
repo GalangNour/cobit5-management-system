@@ -15,6 +15,8 @@ $stmt->bind_param("i", $id_project);
 $stmt->execute();
 $audit_detail_query = $stmt->get_result();
 
+
+
 // Cek apakah data ditemukan
 if ($audit_detail_query->num_rows > 0) {
     $audit_detail = $audit_detail_query->fetch_assoc();
@@ -65,90 +67,69 @@ if ($audit_detail_query->num_rows > 0) {
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box d-flex align-items-center justify-content-between">
+                                <h4 class="page-title">Auditing Ujian</h4>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-header">
-                                    <h4 class="card-title">Auditing Ujian</h4>
-                                </div>
                                 <div class="card-body">
-                                    <h4>Process : <span
-                                            style="background-color: red; color:white; padding: 4px;"><?php echo $process?></span>
-                                    </h4>
-                                    <h4>Level : <span id="level"
-                                            style="background-color: red; color:white; padding: 4px;"><?php echo $level?></span>
-                                    </h4>
-                                    <h4>PA : <span id="pa"
-                                            style="background-color: red; color:white; padding: 4px;"><?php echo $pa?></span>
-                                    </h4><br>
-
-                                    <div class="form-check">
-    <input type="checkbox" class="form-check-input" id="selectAllCheckbox">
-    <label class="form-check-label" for="selectAllCheckbox">Select All</label>
-</div>
+                                    <h4>Process: <span style="background-color: red; color:white; padding: 4px;"><?php echo $process ?></span></h4>
+                                    <h4>Level: <span id="level" style="background-color: red; color:white; padding: 4px;"><?php echo $level ?></span></h4><br>
 
                                     <form id="auditForm" method="post">
-                                        <table
-                                            class="table table-hover table-bordered table-striped dt-responsive nowrap"
-                                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Question</th>
-                                                    <th>Exist</th>
-                                                    <th>Document Evidence</th>
-                                                    <!-- <th>Score</th>
-                                                    <th>Level</th> -->
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php 
-                                                $no = 1;
-                                                // $get_data = mysqli_query($conn, "SELECT * FROM question WHERE process_code = '$process' AND level = '$level'");
-                                                $get_data = mysqli_query($conn, "SELECT * FROM question WHERE process_code = '$process' AND level = '$level' AND pa = '$pa'");
-                                                while ($display = mysqli_fetch_array($get_data)) {
-                                                    $question_id = !empty($display['id_question']) ? $display['id_question'] : '-';
-                                                    $id = !empty($display['id_pengujian']) ? $display['id_pengujian'] : '-';
-                                                    $question = !empty($display['question']) ? $display['question'] : '-';
-                                                    $level = !empty($display['level']) ? $display['level'] : '-';
-                                                    $pa = !empty($display['pa']) ? $display['pa'] : '-';
-                                                ?>
-                                                <tr>
-                                                    <td><?php echo $no; ?></td>
-                                                    <td><?php echo $question; ?></td>
-                                                    <td>
-                                                        <input type="checkbox" name="exist[]" value="1"
-                                                            onchange="updateScoreAndLevel(this)">
-                                                    </td>
-                                                    <td>
-                                                        <textarea name="document_evidence[]"></textarea>
-                                                        <input type="hidden" name="score[]" value="0" readonly>
-                                                        <input type="hidden" name="level[]" class="level-input" value="N"
-                                                        readonly>
-                                                    </td>
-                                                    <!-- <td>
-                                                    </td>
-                                                    <td>
-                                                       
-                                                    </td> -->
-                                                    <input type="hidden" name="question_id[]"
-                                                        value="<?php echo $question_id; ?>">
-                                                    <input type="hidden" name="id_project"
-                                                        value="<?php echo $id_project; ?>">
-                                                    <input type="hidden" name="status_pa" value="<?php echo $pa; ?>">
-                                                </tr>
-                                                <?php
+                                        <?php 
+                                        // Ambil nilai unik PA berdasarkan proses dan level
+                                        $pa_query = mysqli_query($conn, "SELECT DISTINCT pa FROM question WHERE process_code = '$process' AND level = '$level'");
+                                        
+                                        while ($pa_row = mysqli_fetch_assoc($pa_query)) {
+                                            $current_pa = $pa_row['pa'];
+                                            echo "<h4>PA: <span style='background-color: blue; color:white; padding: 4px;'>$current_pa</span></h4>";
+                                            echo "<table class='table table-hover table-bordered table-striped dt-responsive nowrap' style='border-collapse: collapse; border-spacing: 0; width: 100%;'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Question</th>
+                                                            <th>Exist</th>
+                                                            <th>Document Evidence</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>";
+                                            
+                                            // Query untuk mengambil pertanyaan berdasarkan `pa` saat ini
+                                            $get_data = mysqli_query($conn, "SELECT * FROM question WHERE process_code = '$process' AND level = '$level' AND pa = '$current_pa'");
+                                            $no = 1;
+                                            while ($display = mysqli_fetch_array($get_data)) {
+                                                $question_id = !empty($display['id_question']) ? $display['id_question'] : '-';
+                                                $question = !empty($display['question']) ? $display['question'] : '-';
+
+                                                echo "<tr>
+                                                        <td>$no</td>
+                                                        <td>$question</td>
+                                                        <td>
+                                                            <input type='checkbox' name='exist[]' value='1' onchange='updateScoreAndLevel(this)'>
+                                                        </td>
+                                                        <td>
+                                                            <textarea name='document_evidence[]'></textarea>
+                                                            <input type='hidden' name='score[]' value='0' readonly>
+                                                            <input type='hidden' name='level[]' class='level-input' value='N' readonly>
+                                                        </td>
+                                                        <input type='hidden' name='question_id[]' value='$question_id'>
+                                                        <input type='hidden' name='id_project' value='$id_project'>
+                                                        <input type='hidden' name='pa[]' value='$current_pa'>
+                                                    </tr>";
                                                 $no++;
-                                                }
-                                                ?>
+                                            }
+                                            echo "</tbody></table>";
+                                        }
+                                        ?>
+
                                             </tbody>
                                         </table>
                                         <input type="text" id="totalScore" value="0" readonly disabled>
 
-                                        <input type="hidden" id="totalQuestions" value="0" readonly disabled>
+                                        <input type="hidden" id="totalQuestions" value="0" readonly>
 
                                         <input type="hidden" id="averageScore" value="0" readonly disabled>
 
@@ -168,103 +149,44 @@ if ($audit_detail_query->num_rows > 0) {
     </div>
 
     <script>
-    window.addEventListener('beforeunload', function() {
-    // Reset total_score ketika keluar dari halaman
-        localStorage.removeItem('audit_scores');
-    });
-    function updateScoreAndLevel(checkbox) {
-        var row = checkbox.parentElement.parentElement;
-        var scoreInput = row.querySelector('input[name="score[]"]');
-        var levelInput = row.querySelector('input[name="level[]"]');
-        var questionId = row.querySelector('input[name="question_id[]"]').value;
+        function updateScoreAndLevel(checkbox) {
+            var scoreInput = checkbox.parentElement.parentElement.querySelector('input[name="score[]"]');
+            var levelInput = checkbox.parentElement.parentElement.querySelector('input[name="level[]"]');
 
-        // Update score and level based on checkbox state
-        if (checkbox.checked) {
-            scoreInput.value = 100;
-            levelInput.value = "F";
-        } else {
-            scoreInput.value = 0;
-            levelInput.value = "N";
+            if (checkbox.checked) {
+                scoreInput.value = 100;
+                levelInput.value = "F";
+            } else {
+                scoreInput.value = 0;
+                levelInput.value = "N";
+            }
+
+            updateTotalScore();
         }
 
-        // Save current question's state to localStorage
-        var scores = JSON.parse(localStorage.getItem('audit_scores')) || {};
-        scores[questionId] = {
-            score: parseInt(scoreInput.value, 10),
-            level: levelInput.value
-        };
-        localStorage.setItem('audit_scores', JSON.stringify(scores));
+        function updateTotalScore() {
+            var totalScore = 0;
+            var scoreInputs = document.querySelectorAll('input[name="score[]"]');
+            scoreInputs.forEach(function (input) {
+                totalScore += parseInt(input.value);
+            });
 
-        // Recalculate total score and total questions
-        updateTotalScore();
-    }
+            document.getElementById("totalScore").value = totalScore;
+        }
 
+        function countTotalQuestions() {
+            var totalQuestions = 0;
 
-    function updateTotalScore() {
-        var scores = JSON.parse(localStorage.getItem('audit_scores')) || {};
-        var totalScore = 0;
-        var questionCount = Object.keys(scores).length;
+            // Count the number of rows in the table
+            $('#auditForm tbody tr').each(function() {
+                totalQuestions++; // Increment the question count for each row
+            });
+            console.log("Total Questions:", totalQuestions);
 
-        Object.values(scores).forEach(item => {
-            totalScore += parseInt(item.score, 10) || 0; // Parsing angka dengan fallback 0
-        });
+            // Display the total questions in the input field
+            document.getElementById("totalQuestions").value = totalQuestions;
+        }
 
-        // Simpan total skor dan jumlah pertanyaan ke LocalStorage
-        localStorage.setItem('total_score', totalScore);
-        // localStorage.setItem('total_questions', questionCount);
-
-        // Tampilkan di UI
-        document.getElementById("totalScore").value = totalScore;
-        document.getElementById("averageScore").value = questionCount > 0 ? (totalScore / questionCount).toFixed(2) : 0;
-        document.getElementById("auditScore").value = auditScore.value;
-
-    }
-
-    function countTotalQuestions() {
-        // Count the number of rows in the tbody of the questions table
-        var currentQuestionCount = document.querySelectorAll('tbody tr').length;
-
-        // Retrieve the existing total from localStorage
-        var existingTotal = parseInt(localStorage.getItem('total_questions')) || 0; // Default to 0 if not found
-
-        // Update the total questions count
-        var newTotal = existingTotal + currentQuestionCount;
-
-        // Store the new total questions in localStorage
-        localStorage.setItem('total_questions', newTotal);
-
-        // Update the total questions input
-        document.getElementById("totalQuestions").value = newTotal;
-    }
-
-    function displayTotalQuestions() {
-        var totalQuestions = localStorage.getItem('total_questions') || 0; // Default to 0 if not found
-        document.getElementById("totalQuestions").value = totalQuestions; // Update the total questions input
-    }
-
-    document.getElementById('clearStorageButton').addEventListener('click', function() {
-        // Hapus semua data dari localStorage
-        localStorage.removeItem('audit_scores');
-        localStorage.removeItem('total_score');
-        localStorage.removeItem('total_questions');
-
-        // Reset tampilan skor dan jumlah pertanyaan
-        document.getElementById("totalScore").value = 0;
-        document.getElementById("averageScore").value = 0;
-        document.getElementById("totalQuestions").value = 0;
-
-        // Hapus checkbox yang dicentang dan reset level dan score input
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
-        document.querySelectorAll('input[name="score[]"]').forEach(scoreInput => scoreInput.value = 0);
-        document.querySelectorAll('input[name="level[]"]').forEach(levelInput => levelInput.value = 'N');
-
-        // Beri notifikasi kepada pengguna
-        Swal.fire({
-            icon: 'success',
-            title: 'Storage Cleared',
-            text: 'Local storage and form values have been reset.'
-        });
-    });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
@@ -274,6 +196,7 @@ if ($audit_detail_query->num_rows > 0) {
 
     <script>
     $(document).ready(function() {
+
         // Handle form submission
         $('#auditForm').on('submit', function(e) {
             e.preventDefault(); // Prevent normal form submission
@@ -282,16 +205,20 @@ if ($audit_detail_query->num_rows > 0) {
             updateTotalScore();
             countTotalQuestions();
 
+            // Log total score and total questions
+            console.log("Total Score: ", document.getElementById("totalScore").value);
+            console.log("Total Questions: ", document.getElementById("totalQuestions").value);
 
-            // Ambil data dari LocalStorage
-            var scores = JSON.parse(localStorage.getItem('audit_scores')) || {};
-            var totalScore = localStorage.getItem('total_score') || 0;
-            var questionCount = localStorage.getItem('total_questions') || 0;
+            var totalScore = parseInt(document.getElementById("totalScore").value) || 0;
+            var totalQuestions = parseInt(document.getElementById("totalQuestions").value) || 0;
 
-            var averageScore = totalScore / questionCount
+            var averageScore = totalQuestions > 0 ? (totalScore / totalQuestions) : 0;
+
+            // Log the calculated average score
+            console.log("Average Score: ", averageScore);
 
             // Determine status_pa based on the average score
-            var status_pa = averageScore === 100 ? 'next' : 'stay';
+            var status_level = averageScore === 100 ? 'next' : 'stop';
 
             // Prepare data untuk dikirim
             var scoresArray = [];
@@ -299,6 +226,7 @@ if ($audit_detail_query->num_rows > 0) {
             var existsArray = [];
             var documentEvidencesArray = [];
             var questionIdsArray = [];
+            var paArray = [];
 
 
             // Iterasi melalui semua pertanyaan (baris)
@@ -309,9 +237,11 @@ if ($audit_detail_query->num_rows > 0) {
                 var exist = row.find('input[name="exist[]"]').prop('checked') ? 1 : 0; // Ambil status checkbox exist
                 var documentEvidence = row.find('textarea[name="document_evidence[]"]').val(); // Ambil nilai evidence
                 var questionId = row.find('input[name="question_id[]"]').val(); // Ambil ID pertanyaan
+                var pa = row.find('input[name="pa[]"]').val(); // Capture the `pa` value for each question
+
 
                 // Log nilai yang akan dikirim
-                console.log('Score:', score, 'Level:', level, 'Exist:', exist, 'Evidence:', documentEvidence, 'Question ID:', questionId);
+                // console.log('Score:', score, 'Level:', level, 'Exist:', exist, 'Evidence:', documentEvidence, 'Question ID:', questionId, 'PA:', pa);
 
                 // Tambahkan nilai ke array
                 scoresArray.push(score);
@@ -319,6 +249,7 @@ if ($audit_detail_query->num_rows > 0) {
                 existsArray.push(exist);
                 documentEvidencesArray.push(documentEvidence);
                 questionIdsArray.push(questionId);
+                paArray.push(pa);
             });
 
 
@@ -328,7 +259,8 @@ if ($audit_detail_query->num_rows > 0) {
                 method: 'POST',
                 data: {
                     id_project: <?php echo $id_project; ?>,
-                    status_pa: status_pa,
+                    status_level: status_level,
+                    pa: paArray,
                     scores: scoresArray, // Send the scores array
                     levels: levelsArray, // Send the levels array
                     exists: existsArray, // Send the exists array
@@ -348,22 +280,12 @@ if ($audit_detail_query->num_rows > 0) {
                                 .redirect_url; // Redirect if needed
                         });
                     } else if (response.status == 'success') {
-                        if (response.reset == true) {
-                            localStorage.removeItem('audit_scores');
-                            localStorage.removeItem('total_score');
-                            localStorage.removeItem('total_questions');
-
-                            // Reset tampilan skor dan jumlah pertanyaan
-                            document.getElementById("totalScore").value = 0;
-                            document.getElementById("averageScore").value = 0;
-                            document.getElementById("totalQuestions").value = 0;
-                        }
 
                         // Perbarui tampilan level dan PA
                         $('#level').text(response.new_level);
-                        $('#pa').text(response.pa);
+                        $('#status_level').text(response.status_level);
 
-                        if (response.pa == 'stop') {
+                        if (response.status_level == 'stop') {
                             // Jika PA adalah 'stop', redirect ke halaman detail_project.php
                             Swal.fire({
                                 icon: 'error',
@@ -401,8 +323,6 @@ if ($audit_detail_query->num_rows > 0) {
 
             });
         });
-        // Count total questions and display on page load
-        displayTotalQuestions();
     });
     </script>
 </body>
