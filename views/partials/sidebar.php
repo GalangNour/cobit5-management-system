@@ -1,4 +1,6 @@
 <!-- ========== Left Sidebar Start ========== -->
+ <?php 
+ $role = $_SESSION['role']; ?>
 <div class="sidebar-left">
 
     <div data-simplebar class="h-100">
